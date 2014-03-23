@@ -10,6 +10,10 @@ QT += network
 QT += webkit
 QT += xml
 
+unix:MOC_DIR = .moc/
+unix:OBJECTS_DIR = .objects/
+unix:UI_DIR = .ui/
+
 # Input
 HEADERS += clipgrab.h \
     converter.h \
