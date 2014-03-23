@@ -1,0 +1,10 @@
+﻿Compiling ClipGrab is really easy.
+
+You will only need the Qt4 developer libraries in order to compile the program.
+In addition, ffmpeg (no developer libs necessary) needs to be installed.
+
+
+To compile ClipGrab, simply execute
+qmake clipgrab.pro && make
+
+This will create an executable "clipgrab" that you can start via ./clipgrab.

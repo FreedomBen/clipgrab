@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>splash.png</file>
+        <file>icon.png</file>
+        <file>logo.png</file>
+        <file>paypal-logo.png</file>
+    </qresource>
+    <qresource prefix="/lng">
+        <file>clipgrab_fr.qm</file>
+        <file>clipgrab_de.qm</file>
+        <file>clipgrab_fi.qm</file>
+        <file>clipgrab_pl.qm</file>
+        <file>clipgrab_ja.qm</file>
+        <file>clipgrab_ro.qm</file>
+        <file>clipgrab_el.qm</file>
+        <file>clipgrab_it.qm</file>
+        <file>clipgrab_es.qm</file>
+        <file>clipgrab_ru.qm</file>
+        <file>clipgrab_cs.qm</file>
+        <file>clipgrab_zh.ts</file>
+        <file>clipgrab_zh.qm</file>
+    </qresource>
+</RCC>
