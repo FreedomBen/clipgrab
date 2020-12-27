@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>860</width>
-    <height>520</height>
+    <width>917</width>
+    <height>560</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -91,7 +91,8 @@ QToolTip
 #buttonDonate
 {
 padding: 10px;
-}</string>
+}
+</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -145,7 +146,7 @@ padding: 10px;
        <locale language="German" country="Germany"/>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
@@ -173,11 +174,12 @@ padding: 10px;
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QWebView" name="searchWebView">
-          <property name="url">
-           <url>
-            <string>about:blank</string>
-           </url>
+         <widget class="CGWebEngineView" name="searchWebEngineView" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
          </widget>
         </item>
@@ -203,9 +205,15 @@ padding: 10px;
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="maximumSize">
            <size>
-            <width>130</width>
+            <width>210</width>
             <height>16777215</height>
            </size>
           </property>
@@ -254,9 +262,15 @@ padding: 10px;
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="maximumSize">
            <size>
-            <width>180</width>
+            <width>210</width>
             <height>16777215</height>
            </size>
           </property>
@@ -294,12 +308,25 @@ padding: 10px;
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>816</width>
-             <height>152</height>
+             <width>875</width>
+             <height>190</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="1" column="0" colspan="3">
+             <widget class="QTreeView" name="downloadTree">
+              <property name="contextMenuPolicy">
+               <enum>Qt::CustomContextMenu</enum>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <property name="rootIsDecorated">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="3">
              <widget class="QLabel" name="label_5">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -317,17 +344,7 @@ padding: 10px;
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
-             <widget class="QPushButton" name="downloadCancel">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Cancel selected download</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="2">
+            <item row="2" column="2">
              <widget class="QPushButton" name="downloadOpen">
               <property name="enabled">
                <bool>false</bool>
@@ -337,40 +354,17 @@ padding: 10px;
               </property>
              </widget>
             </item>
-            <item row="2" column="0" colspan="3">
-             <widget class="QTreeWidget" name="downloadTree">
-              <property name="alternatingRowColors">
-               <bool>true</bool>
-              </property>
-              <property name="rootIsDecorated">
+            <item row="2" column="1">
+             <widget class="QPushButton" name="downloadCancel">
+              <property name="enabled">
                <bool>false</bool>
               </property>
-              <property name="columnCount">
-               <number>4</number>
+              <property name="text">
+               <string>Cancel selected download</string>
               </property>
-              <column>
-               <property name="text">
-                <string>Portal</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Title</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Format</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Progress</string>
-               </property>
-              </column>
              </widget>
             </item>
-            <item row="3" column="0">
+            <item row="2" column="0">
              <widget class="QPushButton" name="downloadPause">
               <property name="enabled">
                <bool>false</bool>
@@ -619,7 +613,7 @@ padding: 10px;
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="widget">
+              <widget class="QWidget" name="settingsProxyTabPage">
                <attribute name="title">
                 <string>Proxy</string>
                </attribute>
@@ -767,7 +761,14 @@ padding: 10px;
                 <string>Other</string>
                </attribute>
                <layout class="QGridLayout" name="gridLayout_14">
-                <item row="6" column="1">
+                <item row="7" column="0">
+                 <widget class="QCheckBox" name="settingsUseWebM">
+                  <property name="text">
+                   <string>Use WebM if possible</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="10" column="1">
                  <spacer name="verticalSpacer">
                   <property name="orientation">
                    <enum>Qt::Vertical</enum>
@@ -780,24 +781,45 @@ padding: 10px;
                   </property>
                  </spacer>
                 </item>
-                <item row="3" column="0" colspan="2">
+                <item row="5" column="0" colspan="2">
                  <widget class="QCheckBox" name="settingsRemoveFinishedDownloads">
                   <property name="text">
                    <string>Remove finished downloads from list</string>
                   </property>
                  </widget>
                 </item>
-                <item row="4" column="0">
+                <item row="6" column="0">
                  <widget class="QCheckBox" name="settingsMinimizeToTray">
                   <property name="text">
                    <string>Minimize ClipGrab to the system tray</string>
                   </property>
                  </widget>
                 </item>
-                <item row="5" column="0">
-                 <widget class="QCheckBox" name="settingsUseWebM">
+                <item row="4" column="0">
+                 <widget class="QCheckBox" name="settingsRememberVideoQuality">
                   <property name="text">
-                   <string>Use WebM if possible</string>
+                   <string>Remember video quality</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="8" column="0">
+                 <widget class="QCheckBox" name="settingsIgnoreSSLErrors">
+                  <property name="text">
+                   <string>Ignore SSL errors</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QCheckBox" name="settingsRememberLogins">
+                  <property name="text">
+                   <string>Remember logins</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="9" column="0">
+                 <widget class="QCheckBox" name="settingsForceIpV4">
+                  <property name="text">
+                   <string>Force IPv4</string>
                   </property>
                  </widget>
                 </item>
@@ -1101,6 +1123,37 @@ padding:4px;</string>
         <string>About</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_17">
+        <item row="3" column="1">
+         <widget class="QLabel" name="labelThanks">
+          <property name="text">
+           <string>&lt;h2&gt;Thanks&lt;/h2&gt;
+ClipGrab relies on the work of the Qt project, the ffmpeg team, and the youtube-dl team.&lt;br&gt;
+Visit &lt;a href=&quot;https://www.qt.io&quot;&gt;qt.io&lt;/a&gt;, &lt;a href=&quot;https://ffmpeg.org&quot;&gt;ffmpeg.org&lt;/a&gt;, and &lt;a href=&quot;https://youtube-dl.org&quot;&gt;youtube-dl.org&lt;/a&gt; for further information.</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::RichText</enum>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="openExternalLinks">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0" colspan="2">
+         <widget class="QLabel" name="labelYoutubeDlVersionInfo">
+          <property name="font">
+           <font>
+            <family>Segoe UI</family>
+            <pointsize>8</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QLabel" name="labelSupport">
           <property name="text">
@@ -1138,7 +1191,7 @@ padding:4px;</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="2">
+        <item row="3" column="0">
          <widget class="QLabel" name="labelTranslation">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1161,26 +1214,21 @@ ClipGrab is already available in many languages. If ClipGrab has not been transl
           </property>
          </widget>
         </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QLabel" name="labelThanks">
-          <property name="text">
-           <string>&lt;h2&gt;Thanks&lt;/h2&gt;
-ClipGrab relies on the work of the Qt project and the ffmpeg team.&lt;br&gt;
-Visit &lt;a href=&quot;http://qt-project.org&quot;&gt;qt-project.org&lt;/a&gt; and &lt;a href=&quot;http://ffmpeg.org&quot;&gt;ffmpeg.org&lt;/a&gt; for further information.</string>
-          </property>
-          <property name="textFormat">
-           <enum>Qt::RichText</enum>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-          <property name="openExternalLinks">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0" colspan="2">
+        <item row="4" column="0">
          <spacer name="verticalSpacer_13">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="0">
+         <spacer name="verticalSpacer_12">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -1200,7 +1248,7 @@ Visit &lt;a href=&quot;http://qt-project.org&quot;&gt;qt-project.org&lt;/a&gt; a
      <widget class="QLabel" name="label">
       <property name="text">
        <string notr="true">&lt;style&gt;a{color:#444;text-decoration:none}a:hover{color:#222;text-decoration:underline}&lt;/style&gt;
-&lt;a href=&quot;http://vanbittern.com&quot;&gt;© 2014 Philipp Schmieder&lt;/a&gt; | &lt;a href=&quot;http://clipgrab.de&quot;&gt;%version&lt;/a&gt; | &lt;a href=&quot;http://clipgrab.de&quot;&gt;www.clipgrab.de&lt;/a&gt;</string>
+&lt;a href=&quot;https://clipgrab.org&quot;&gt;%version&lt;/a&gt; | &lt;a href=&quot;https://clipgrab.org&quot;&gt;www.clipgrab.org&lt;/a&gt;</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -1217,8 +1265,8 @@ Visit &lt;a href=&quot;http://qt-project.org&quot;&gt;qt-project.org&lt;/a&gt; a
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>860</width>
-     <height>21</height>
+     <width>917</width>
+     <height>23</height>
     </rect>
    </property>
   </widget>
@@ -1226,9 +1274,10 @@ Visit &lt;a href=&quot;http://qt-project.org&quot;&gt;qt-project.org&lt;/a&gt; a
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>QWebView</class>
+   <class>CGWebEngineView</class>
    <extends>QWidget</extends>
-   <header>QtWebKit/QWebView</header>
+   <header location="global">web_engine_view.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>

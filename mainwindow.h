@@ -1,6 +1,6 @@
 /*
     ClipGrab³
-    Copyright (C) Philipp Schmieder
+    Copyright (C) The ClipGrab Project
     http://clipgrab.de
     feedback [at] clipgrab [dot] de
 
@@ -24,14 +24,88 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 #include <QSignalMapper>
 #include <QtXml>
 #include <QUrl>
+#include <QUrlQuery>
+#include <QtWebEngineWidgets>
+#include <QFontDatabase>
 #include "ui_mainwindow.h"
 #include "ui_metadata-dialog.h"
 #include "clipgrab.h"
+#include "video.h"
 #include "notifications.h"
+#include "download_list_model.h"
+
+
+class SearchWebEngineUrlRequestInterceptor : public QWebEngineUrlRequestInterceptor
+{
+    Q_OBJECT
+public:
+    void interceptRequest(QWebEngineUrlRequestInfo &info) {
+        if (info.requestUrl().toString().startsWith("https://m.youtube.com/watch?")) {
+            info.block(true);
+            QUrl url;
+            url.setScheme("https");
+            url.setHost("www.youtube.com");
+            url.setPath("/watch");
+            url.setQuery("v=" + QUrlQuery(info.requestUrl().query()).queryItemValue("v"));
+            emit intercepted(url);
+        }
+    }
+
+signals:
+        void intercepted(const QUrl & url);
+};
+
+class SearchWebEnginePage : public QWebEnginePage
+{
+    Q_OBJECT
+public:
+    SearchWebEnginePage(QWebEngineProfile* profile, QObject* parent = 0) :  QWebEnginePage(profile, parent)
+    {
+        this->setAudioMuted(true);
+        SearchWebEngineUrlRequestInterceptor* interceptor = new SearchWebEngineUrlRequestInterceptor();
+        this->profile()->setRequestInterceptor(interceptor);
+        connect(interceptor, SIGNAL(intercepted(QUrl)), this, SLOT(handleInterceptedUrl(QUrl)));
+    }
+
+
+    bool acceptNavigationRequest(const QUrl & url, QWebEnginePage::NavigationType type, bool isMainFrame)
+    {
+        if (!isMainFrame) return true;
+
+        if (type == QWebEnginePage::NavigationTypeTyped)
+        {
+            if (QRegExp("https://(www|m)\\.youtube.com/watch").indexIn(url.toString()) > -1)
+            {
+                emit linkClicked(url);
+                return false;
+            }
+            return true;
+        }
+        if (type == QWebEnginePage::NavigationTypeLinkClicked)
+        {
+            if (QRegExp("https://(www|m)\\.youtube.com").indexIn(url.toString()) > -1)
+            {
+                emit linkClicked(url);
+            }
+        }
+        return false;
+    }
+protected:
+    void javaScriptConsoleMessage(QWebEnginePage::JavaScriptConsoleMessageLevel /*level*/, const QString & /*message*/, int /*lineNumber*/, const QString & /*sourceID*/) {
+        //Don't log anything
+    }
+public slots:
+    void handleInterceptedUrl(const QUrl & url) {
+        emit linkIntercepted(url);
+    }
+signals:
+    void linkClicked(const QUrl & url);
+    void linkIntercepted(const QUrl & url);
+};
 
 
 class MainWindow : public QMainWindow
@@ -39,27 +113,22 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
+    MainWindow(ClipGrab* cg, QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~MainWindow();
     void init();
 
-    ClipGrab *cg;
+    ClipGrab* cg;
 
 public slots:
     void startDownload();
-    void compatiblePortalFound(bool, video*);
     void compatibleUrlFoundInClipBoard(QString url);
-    void updateVideoInfo();
-    //void openFinishedVideo(QModelIndex);
-
-signals:
-    void itemToCancel(int);
+    void targetFileSelected(video* video, QString target);
+    void searchTimerTimeout();
 
 private:
     Ui::MainWindowClass ui;
      QSignalMapper *changeTabMapper;
      QSignalMapper *downloadMapper;
-     video* currentVideo;
      Ui::MetadataDialog mdui;
      QDialog* metadataDialog;
      QSystemTrayIcon systemTrayIcon;
@@ -68,13 +137,19 @@ private:
      void closeEvent(QCloseEvent* event);
      void timerEvent(QTimerEvent*);
      void changeEvent(QEvent *);
-     QNetworkAccessManager* searchNam;
-     QNetworkReply* searchReply;
+     void dragEnterEvent(QDragEnterEvent *event);
+     void dropEvent(QDropEvent *event);
+     bool updatingComboQuality;
+     SearchWebEnginePage* searchPage;
+     QTimer searchTimer;
+     void updateSearch(QString keywords);
+     void updateYoutubeDlVersionInfo();
 
 private slots:
+    void handleCurrentVideoStateChanged(video*);
+
     void on_mainTab_currentChanged(int index);
     void on_downloadComboFormat_currentIndexChanged(int index);
-    void on_searchWebView_linkClicked(QUrl );
     void on_searchLineEdit_textChanged(QString );
     void on_settingsUseMetadata_stateChanged(int );
     void on_label_linkActivated(QString link);
@@ -82,7 +157,7 @@ private slots:
     void on_settingsMinimizeToTray_stateChanged(int );
     void on_downloadPause_clicked();
     void on_settingsRemoveFinishedDownloads_stateChanged(int );
-    void on_downloadTree_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void handle_downloadTree_currentChanged(const QModelIndex &current, const QModelIndex &previous);
     void systemTrayMessageClicked();
     void systemTrayIconActivated(QSystemTrayIcon::ActivationReason);
     void on_downloadOpen_clicked();
@@ -95,13 +170,20 @@ private slots:
     void settingsClipboard_toggled(bool);
     void settingsNotifications_toggled(bool);
     void settingsProxyChanged();
-    void processSearchReply();
+    void handleSearchResults(video*);
+    void handleSearchResultClicked(const QUrl & url);
 
     void handleFinishedConversion(video*);
-    void on_downloadTree_doubleClicked(const QModelIndex);
     void on_settingsLanguage_currentIndexChanged(int index);
     void on_buttonDonate_clicked();
     void on_settingsUseWebM_toggled(bool checked);
+    void on_settingsIgnoreSSLErrors_toggled(bool checked);
+    void on_downloadTree_customContextMenuRequested(const QPoint &pos);
+    void on_settingsRememberLogins_toggled(bool checked);
+    void on_settingsRememberVideoQuality_toggled(bool checked);
+    void on_downloadComboQuality_currentIndexChanged(int index);
+    void on_downloadTree_doubleClicked(const QModelIndex &index);
+    void on_settingsForceIpV4_toggled(bool checked);
 };
 
 #endif // MAINWINDOW_H

@@ -1,704 +1,644 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="pt_PT">
-<defaultcodec>UTF-8</defaultcodec>
+<TS version="2.1" language="en_US">
 <context>
     <name>ClipGrab</name>
     <message>
-        <location filename="clipgrab.cpp" line="38"/>
         <source>Automatic language recognition</source>
+        <translation>Reconhecimento automático de idioma</translation>
+    </message>
+    <message>
+        <source>Downloading update … %1/%2 MBytes</source>
+        <translation>Atualização do download … %1/%2 MBytes</translation>
+    </message>
+    <message>
+        <source>There was an error while downloading the update.: %1</source>
+        <translation>Ocorreu um erro baixando a atualização.: %1</translation>
+    </message>
+    <message>
+        <source>The fingerprint of the downloaded update file could not be verified: %1 should have been %2</source>
+        <translation>A assinatura do arquivo atualizado baixado não pôde ser verificada: %1 deveria ter sido %2</translation>
+    </message>
+    <message>
+        <source>Could not open update file.</source>
+        <translation>Não foi possível abrir o arquivo de atualização.</translation>
+    </message>
+    <message>
+        <source>Unable to write to %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error downloading youtube-dl: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>B</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>KiB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MiB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>GiB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TiB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SSL error: %1 
+%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DownloadListModel</name>
+    <message>
+        <source>Starting ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Converting ...</source>
+        <translation type="unfinished">Convertendo...</translation>
+    </message>
+    <message>
+        <source>Finished</source>
+        <translation type="unfinished">Finalizado</translation>
+    </message>
+    <message>
+        <source>Paused</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Canceled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Portal</source>
+        <translation type="unfinished">Portal</translation>
+    </message>
+    <message>
+        <source>Title</source>
+        <translation type="unfinished">Título</translation>
+    </message>
+    <message>
+        <source>Quality</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Format</source>
+        <translation type="unfinished">Formato</translation>
+    </message>
+    <message>
+        <source>Progress</source>
+        <translation type="unfinished">Progresso</translation>
+    </message>
+    <message>
+        <source>Failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>HelperDownloader</name>
+    <message>
+        <source>Dialog</source>
+        <translation type="unfinished">Diálogo</translation>
+    </message>
+    <message>
+        <source>Continue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit ClipGrab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloading youtube-dl</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;ClipGrab uses youtube-dl in order to download videos from the Internet. youtube-dl is developed by an independent team of Open Source developers and released into the public domain.&lt;br&gt;Learn more on &lt;a href=&quot;https://youtube-dl.org&quot;&gt;youtube-dl.org&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Click on &lt;em&gt;Continue&lt;/em&gt; to download youtube-dl.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.cpp" line="204"/>
         <source>Select Target</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um Destino</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="262"/>
         <source>Please wait while ClipGrab is loading information about the video ...</source>
-        <translation type="unfinished"></translation>
+        <translation>Espere enquanto ClipGrab está carregando informações sobre o vídeo ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="279"/>
         <source>Please enter the link to the video you want to download in the field below.</source>
-        <translation type="unfinished"></translation>
+        <translation>Informe no campo abaixo o link do vídeo que você deseja baixar.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="284"/>
-        <source>The link you have entered seems to not be recognised by any of the supported portals.&lt;br/&gt;Now ClipGrab will check if it can download a video from that site anyway.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="311"/>
         <source>No downloadable video could be found.&lt;br /&gt;Maybe you have entered the wrong link or there is a problem with your connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhum vídeo passível de ser baixado pôde ser encontrado.&lt;br/&gt;Talvez você tenha digitado o link errado ou há um problema com a sua conexão.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="324"/>
         <source>ClipGrab - Select target path</source>
-        <translation type="unfinished"></translation>
+        <translation>ClipGrab - Escolha um caminho de destino</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="371"/>
         <source>ClipGrab: Video discovered in your clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>ClipGrab: Vídeo encontrado em sua área de transferência</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="371"/>
         <source>ClipGrab has discovered the address of a compatible video in your clipboard. Click on this message to download it now.</source>
-        <translation type="unfinished"></translation>
+        <translation>ClipGrab descobriu a localização de um vídeo compatível em sua área de transferência. Clique nesta mensagem para baixá-lo agora.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="477"/>
         <source>ClipGrab - Exit confirmation</source>
-        <translation type="unfinished"></translation>
+        <translation>ClipGrab - Confirmar saída</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="477"/>
         <source>There is still at least one download in progress.&lt;br /&gt;If you exit the program now, all downloads will be canceled and cannot be recovered later.&lt;br /&gt;Do you really want to quit ClipGrab now?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>The word &quot;download&quot; can be translated into Portuguese as &quot; baixar&quot; when it refers to the verb. On the other hand, when it is noun it is not translated into Portuguese in general.</translatorcomment>
+        <translation>Existe ainda pelo menos um download em progresso.&lt;br /&gt;Se você fechar o programa agora, todos os downloads serão cancelados e não poderão ser recuperados depois.&lt;br /&gt;Você realmente deseja fechar o ClipGrab agora?</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="513"/>
+        <source>&amp;Open downloaded file</source>
+        <translation>&amp;Abrir arquivo baixado</translation>
+    </message>
+    <message>
+        <source>Open &amp;target folder</source>
+        <translation>Abrir &amp;pasta de destino</translation>
+    </message>
+    <message>
+        <source>&amp;Pause download</source>
+        <translation>&amp;Pausar download</translation>
+    </message>
+    <message>
+        <source>&amp;Restart download</source>
+        <translation>&amp;Reiniciar download</translation>
+    </message>
+    <message>
+        <source>&amp;Cancel download</source>
+        <translation>&amp;Cancelar download</translation>
+    </message>
+    <message>
+        <source>Copy &amp;video link</source>
+        <translation>Copiar link do &amp;vídeo</translation>
+    </message>
+    <message>
+        <source>Open video link in &amp;browser</source>
+        <translatorcomment>I&apos;m sure all brazilians would call it &quot;browser&quot; but navegador de internet is the correct translation
+</translatorcomment>
+        <translation>Abrir link do vídeo no &amp;navegador de internet</translation>
+    </message>
+    <message>
+        <source>Resume download</source>
+        <translation>Continuar download</translation>
+    </message>
+    <message>
+        <source>Show in &amp;Finder</source>
+        <translatorcomment>Finder is a Mac IOs feature, not sure what the name in Portuguese is and if Finder needs to be translated</translatorcomment>
+        <translation>Mostrar no &amp;Finder</translation>
+    </message>
+    <message>
+        <source>No results found.</source>
+        <translation>Nenhum resultado encontrado.</translation>
+    </message>
+    <message>
         <source>Download finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="513"/>
         <source>Downloading and converting “%title” is now finished.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="517"/>
         <source>All downloads finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="517"/>
         <source>ClipGrab has finished downloading and converting all selected videos.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="582"/>
-        <location filename="mainwindow.cpp" line="584"/>
-        <location filename="mainwindow.cpp" line="591"/>
-        <location filename="mainwindow.cpp" line="593"/>
-        <source>ClipGrab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="582"/>
-        <location filename="mainwindow.cpp" line="584"/>
-        <source> MiB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="584"/>
-        <source> KiB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="591"/>
-        <location filename="mainwindow.cpp" line="593"/>
-        <source>Currently no downloads in progress.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="594"/>
-        <source>ClipGrab - Download and Convert Online Videos</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MainWindowClass</name>
     <message>
-        <location filename="mainwindow.ui" line="14"/>
         <source>ClipGrab - Download and Convert Online Videos</source>
-        <translation type="unfinished"></translation>
+        <translation>ClipGrab - Baixe e Converta Vídeos Online</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="152"/>
         <source>Search</source>
-        <translation type="unfinished"></translation>
+        <translation>Busca</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="171"/>
         <source>Enter keywords in the box below in order to search videos on YouTube</source>
-        <translation type="unfinished"></translation>
+        <translation>Escreva palavras-chave no espaço abaixo para procurar vídeos no YouTube</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="179"/>
-        <source>about:blank</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="188"/>
         <source>Downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>Downloads</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="197"/>
         <source>Grab this clip!</source>
-        <translation type="unfinished"></translation>
+        <translation>Baixe este vídeo!</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="226"/>
         <source>Quality:</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualidade:</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="248"/>
         <source>Please enter the link to the video you want to download in the field below.</source>
-        <translation type="unfinished"></translation>
+        <translation>Informe no campo abaixo o link do vídeo que você deseja baixar.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="280"/>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato:</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="319"/>
         <source>Current Downloads:</source>
-        <translation type="unfinished"></translation>
+        <translation>Downloads Presentes:</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="329"/>
         <source>Cancel selected download</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancelar o download selecionado</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="339"/>
         <source>Open the target folder of the selected download</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir a pasta destino do download selecionado</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="356"/>
-        <source>Portal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="361"/>
-        <source>Title</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="366"/>
-        <source>Format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="371"/>
-        <source>Progress</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="382"/>
         <source>Pause selected download</source>
-        <translation type="unfinished"></translation>
+        <translation>Pausar o download selecionado</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="394"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="407"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Geral</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="431"/>
         <source>Here you can adjust some general settings concerning the behaviour of ClipGrab.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aqui você pode ajustar algumas configurações gerais relacionadas ao comportamento de ClipGrab.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="442"/>
         <source>Target Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Caminho de Destino</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="448"/>
         <source>Always save at the last used path.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sempre salvar no último caminho usado.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="462"/>
         <source>Here you can configure where the downloaded videos are to be saved.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aqui você pode configurar onde salvar os vídeos baixados.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="469"/>
         <source>Browse ...</source>
-        <translation type="unfinished"></translation>
+        <translation>Explorar...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="476"/>
         <source>Never ask for file name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nunca perguntar o nome do arquivo</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="497"/>
         <source>Metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>Metadados</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="503"/>
         <source>Here you can configure if ClipGrab is supposed to add metadata (ID3 tags) to your mp3 files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aqui você pode configurar se ClipGrab deve adicionar metadados (etiquetas ID3) aos seus arquivos mp3.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="510"/>
         <source>Use metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar metadados</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="531"/>
         <source>Clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Área de Transferência</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="537"/>
         <source>Here you can configure how ClipGrab behaves when a downloadable video is discovered in your clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aqui você pode configurar como ClipGrab deve se comportar quando um vídeo baixado é encontrado na sua área de transferência.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="544"/>
         <source>Always download</source>
-        <translation type="unfinished"></translation>
+        <translation>Sempre baixar</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="551"/>
         <source>Never download</source>
-        <translation type="unfinished"></translation>
+        <translation>Nunca baixar</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="558"/>
         <source>Always ask</source>
-        <translation type="unfinished"></translation>
+        <translation>Sempre perguntar</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="579"/>
         <source>Notifications</source>
-        <translation type="unfinished"></translation>
+        <translation>Notificações</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="585"/>
         <source>After each download</source>
-        <translation type="unfinished"></translation>
+        <translation>Após cada download</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="592"/>
         <source>After all downloads have been completed</source>
-        <translation type="unfinished"></translation>
+        <translation>Após serem completados todos os downloads</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="612"/>
         <source>Here you can configure when ClipGrab is supposed to display notifications.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aqui você pode configurar quando ClipGrab deve mostrar as notificações.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="619"/>
         <source>Never</source>
-        <translation type="unfinished"></translation>
+        <translation>Nunca</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="627"/>
         <source>Proxy</source>
-        <translation type="unfinished"></translation>
+        <translation>Proxy</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="633"/>
         <source>Use a proxy server</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar um servidor proxy</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="643"/>
         <source>Proxy settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações do proxy</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="652"/>
         <source>Hostname/IP:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do Servidor/IP:</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="659"/>
         <source>Port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Porta:</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="686"/>
         <source>Proxy type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de proxy:</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="694"/>
         <source>HTTP Proxy</source>
-        <translation type="unfinished"></translation>
+        <translation>Proxy HTTP</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="699"/>
         <source>Socks5 Proxy</source>
-        <translation type="unfinished"></translation>
+        <translation>Proxy Sock5</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="726"/>
         <source>Proxy authentication</source>
-        <translation type="unfinished"></translation>
+        <translation>Autenticação do proxy</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="732"/>
         <source>Username:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do usuário:</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="749"/>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Senha:</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="762"/>
         <source>Proxy requires authentication</source>
-        <translation type="unfinished"></translation>
+        <translation>Proxy requer autenticação</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="770"/>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Outros</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="789"/>
         <source>Remove finished downloads from list</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover os downloads finalizados da lista</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="796"/>
         <source>Minimize ClipGrab to the system tray</source>
-        <translation type="unfinished"></translation>
+        <translation>Minimizar ClipGrab para a barra de menu</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="803"/>
         <source>Use WebM if possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar WebM se possível</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="815"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Idioma</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="839"/>
         <source>Here you can change the language of ClipGrab.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aqui você pode mudar o idioma do ClipGrab.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="846"/>
         <source>Please select a language from the list below. You have to restart ClipGrab in order to apply you selection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione um idioma da lista abaixo. Você deve reiniciar ClipGrab para que sua seleção tenha efeito.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="883"/>
         <source>Conversion</source>
-        <translation type="unfinished"></translation>
+        <translation>Conversão</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="906"/>
         <source>Experts can create custom presets for the video conversion here.</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuários avançados podem criar pré-ajustes para conversões de vídeos.aqui.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="913"/>
         <source>Format preset</source>
-        <translation type="unfinished"></translation>
+        <translation>Pré-ajuste de formato</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="923"/>
         <source>Add new preset</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar pré-ajuste</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="930"/>
         <source>Remove selected preset</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminar pré-ajuste selecionado</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="953"/>
         <source>Audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Áudio</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="965"/>
-        <location filename="mainwindow.ui" line="1017"/>
         <source>Codec</source>
-        <translation type="unfinished"></translation>
+        <translation>Codec</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="991"/>
-        <location filename="mainwindow.ui" line="1079"/>
         <source>Bitrate (kb/s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Taxa de bits (kb/s)</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="998"/>
         <source>Disable Audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Desativar áudio</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1008"/>
         <source>Video</source>
-        <translation type="unfinished"></translation>
+        <translation>Vídeo</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1030"/>
         <source>Frames/second</source>
-        <translation type="unfinished"></translation>
+        <translation>Quadros/segundo</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1089"/>
         <source>Disable video</source>
-        <translation type="unfinished"></translation>
+        <translation>Desativar vídeo</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1104"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobre</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1110"/>
         <source>&lt;h2&gt;Support ClipGrab!&lt;/h2&gt;
 &lt;p&gt;Only with your support, ClipGrab can remain free software!&lt;br&gt;So if you like ClipGrab and also want to help ensuring its further development, please consider making a donation.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h2&gt;Apoie ClipGrab!&lt;/h2&gt;
+&lt;p&gt;Apenas com seu apoio ClipGrap pode continuar a ser um software livre!&lt;br&gt;Assim, se você gostou e também quer ajudar a garantir seu futuro desenvolvimento, por favor, considere fazer uma doação.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1153"/>
         <source>&lt;h2&gt;Translation&lt;/h2&gt;
 ClipGrab is already available in many languages. If ClipGrab has not been translated into your language yet and if you want to contribute a translation, please check &lt;a href=&quot;http://clipgrab.de/translate&quot;&gt;http://clipgrab.de/translate&lt;/a&gt; for further information.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h2&gt;Tradução&lt;/h2&gt;
+ClipGrab já está disponível em vários idiomas. Se o ClipGrab ainda não foi traduzido para o seu idioma e você quer contribuir com sua tradução, consulte &lt;a href=&quot;http://clipgrab.de/translate&quot;&gt;http://clipgrab.de/translate&lt;/a&gt; para mais informações.</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1170"/>
+        <source>Ignore SSL errors</source>
+        <translation>Ignore erros de SSL</translation>
+    </message>
+    <message>
+        <source>Remember logins</source>
+        <translation>Memorize logins</translation>
+    </message>
+    <message>
+        <source>Remember video quality</source>
+        <translation>Memorize qualidade de vídeo</translation>
+    </message>
+    <message>
         <source>&lt;h2&gt;Thanks&lt;/h2&gt;
-ClipGrab relies on the work of the Qt project and the ffmpeg team.&lt;br&gt;
-Visit &lt;a href=&quot;http://qt-project.org&quot;&gt;qt-project.org&lt;/a&gt; and &lt;a href=&quot;http://ffmpeg.org&quot;&gt;ffmpeg.org&lt;/a&gt; for further information.</source>
+ClipGrab relies on the work of the Qt project, the ffmpeg team, and the youtube-dl team.&lt;br&gt;
+Visit &lt;a href=&quot;https://www.qt.io&quot;&gt;qt.io&lt;/a&gt;, &lt;a href=&quot;https://ffmpeg.org&quot;&gt;ffmpeg.org&lt;/a&gt;, and &lt;a href=&quot;https://youtube-dl.org&quot;&gt;youtube-dl.org&lt;/a&gt; for further information.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MetadataDialog</name>
     <message>
-        <location filename="metadata-dialog.ui" line="14"/>
         <source>ClipGrab - enter metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>ClipGrab - entre os metadados</translation>
     </message>
     <message>
-        <location filename="metadata-dialog.ui" line="25"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt; font-weight:600;&quot;&gt;Please enter the metadata for your download. If you don&apos;t want to add&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt; font-weight:600;&quot;&gt;metadata, just leave the fields empty.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="metadata-dialog.ui" line="50"/>
         <source>Title:</source>
-        <translation type="unfinished"></translation>
+        <translation>Título:</translation>
     </message>
     <message>
-        <location filename="metadata-dialog.ui" line="57"/>
         <source>Artist:</source>
-        <translation type="unfinished"></translation>
+        <translation>Artista:</translation>
+    </message>
+    <message>
+        <source>Please enter the metadata for your download. If you don&apos;t want to add metadata, just leave the fields empty.</source>
+        <translation>Favor entrar os metadados para o seu download. Se você não quiser adicionar metadados, deixe os campos em branco.</translation>
     </message>
 </context>
 <context>
-    <name>YoutubePassword</name>
+    <name>UpdateMessage</name>
     <message>
-        <location filename="youtube_password.ui" line="14"/>
-        <source>Password required</source>
-        <translation type="unfinished"></translation>
+        <source>Update for ClipGrab</source>
+        <translation>Atualização para o ClipGrab</translation>
     </message>
     <message>
-        <location filename="youtube_password.ui" line="29"/>
-        <source>This video requires you to log in with your Google account.
-Please enter your password and username.</source>
-        <translation type="unfinished"></translation>
+        <source>ClipGrab %1 is now available (you are using %2). Would you like to install the update?</source>
+        <translation>ClipGrab %1 já está disponível (você está usando %2). Você gostaria de instalar a atualização?</translation>
     </message>
     <message>
-        <location filename="youtube_password.ui" line="40"/>
-        <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <source>There is an update for your version of ClipGrab!</source>
+        <translation>Existe uma atualização para a sua versão do ClipGrab!</translation>
     </message>
     <message>
-        <location filename="youtube_password.ui" line="64"/>
-        <source>E-mail:</source>
-        <translation type="unfinished"></translation>
+        <source>Skip this update</source>
+        <translation>Ignore esta atualização</translation>
     </message>
     <message>
-        <location filename="youtube_password.ui" line="81"/>
-        <source>Save login data</source>
-        <translation type="unfinished"></translation>
+        <source>Download update</source>
+        <translation>Baixe a atualização</translation>
+    </message>
+    <message>
+        <source>about:blank</source>
+        <translation>about:blank</translation>
+    </message>
+    <message>
+        <source>Remind me later</source>
+        <translation>Lembre-me mais tarde</translation>
+    </message>
+    <message>
+        <source>The update will begin in just a moment …</source>
+        <translation>A atualização vai começar em breve ...</translation>
     </message>
 </context>
 <context>
     <name>converter_copy</name>
     <message>
-        <location filename="converter_copy.cpp" line="28"/>
         <source>Original</source>
-        <translation type="unfinished"></translation>
+        <translation>Original</translation>
     </message>
 </context>
 <context>
     <name>converter_ffmpeg</name>
     <message>
-        <location filename="converter_ffmpeg.cpp" line="178"/>
         <source>MPEG4</source>
-        <translation type="unfinished"></translation>
+        <translation>MPEG4</translation>
     </message>
     <message>
-        <location filename="converter_ffmpeg.cpp" line="179"/>
         <source>WMV (Windows)</source>
-        <translation type="unfinished"></translation>
+        <translation>WMV (Windows)</translation>
     </message>
     <message>
-        <location filename="converter_ffmpeg.cpp" line="180"/>
         <source>OGG Theora</source>
-        <translation type="unfinished"></translation>
+        <translation>OGG Theora</translation>
     </message>
     <message>
-        <location filename="converter_ffmpeg.cpp" line="181"/>
         <source>MP3 (audio only)</source>
-        <translation type="unfinished"></translation>
+        <translation>MP3 (apenas áudio)</translation>
     </message>
     <message>
-        <location filename="converter_ffmpeg.cpp" line="182"/>
         <source>OGG Vorbis (audio only)</source>
-        <translation type="unfinished"></translation>
+        <translation>OGG Vorbis (apenas áudio)</translation>
     </message>
     <message>
-        <location filename="converter_ffmpeg.cpp" line="316"/>
         <source>No installed version of avconv or ffmpeg coud be found. Converting files and downloading 1080p videos from YouTube is not supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível encontrar versão instalada do avconv ou ffmpeg. Converter arquivos e baixar vídeos 1080p do YouTube não é suportado.</translation>
     </message>
     <message>
-        <location filename="converter_ffmpeg.cpp" line="331"/>
         <source>The installed version of %1 is outdated.
 Downloading 1080p videos from YouTube is not supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>A versão instalada do %1 está desatualizada. Baixar vídeos 1080p do YouTuvbe não é suportado.</translation>
+    </message>
+    <message>
+        <source>Original (audio only)</source>
+        <translation>Original (apenas áudio)</translation>
+    </message>
+</context>
+<context>
+    <name>messageDialog</name>
+    <message>
+        <source>Dialog</source>
+        <translation>Diálogo</translation>
+    </message>
+    <message>
+        <source>Close this message</source>
+        <translation>Fechar esta mensagem</translation>
+    </message>
+    <message>
+        <source>about:blank</source>
+        <translation>about:blank</translation>
     </message>
 </context>
 <context>
     <name>video</name>
     <message>
-        <location filename="video.cpp" line="152"/>
-        <location filename="video.cpp" line="268"/>
-        <source>Converting ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="video.cpp" line="188"/>
-        <source>Downloading ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="video.cpp" line="188"/>
-        <source> MiB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="video.cpp" line="334"/>
-        <source>Finished</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="video.cpp" line="338"/>
-        <source>Finished!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>video_clipfish</name>
-    <message>
-        <location filename="video_clipfish.cpp" line="85"/>
-        <source>normal</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>video_dailymotion</name>
-    <message>
-        <location filename="video_dailymotion.cpp" line="84"/>
-        <source>HD (1080p)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="video_dailymotion.cpp" line="94"/>
-        <source>HD (720p)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="video_dailymotion.cpp" line="104"/>
-        <source>high (480p)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="video_dailymotion.cpp" line="114"/>
-        <source>low (240p)</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>video_heuristic</name>
-    <message>
-        <location filename="video_heuristic.cpp" line="63"/>
-        <location filename="video_heuristic.cpp" line="76"/>
-        <location filename="video_heuristic.cpp" line="88"/>
-        <location filename="video_heuristic.cpp" line="101"/>
-        <location filename="video_heuristic.cpp" line="116"/>
-        <location filename="video_heuristic.cpp" line="130"/>
-        <location filename="video_heuristic.cpp" line="143"/>
-        <source>normal</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>video_myspass</name>
-    <message>
-        <location filename="video_myspass.cpp" line="85"/>
-        <source>high</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>video_myvideo</name>
-    <message>
-        <location filename="video_myvideo.cpp" line="59"/>
-        <source>normal</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>video_vimeo</name>
-    <message>
-        <location filename="video_vimeo.cpp" line="91"/>
-        <source>HD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="video_vimeo.cpp" line="98"/>
-        <source>high</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>video_youtube</name>
-    <message>
-        <location filename="video_youtube.cpp" line="467"/>
-        <source>normal</source>
+        <source>unknown</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

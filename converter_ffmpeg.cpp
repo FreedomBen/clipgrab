@@ -1,6 +1,6 @@
 /*
     ClipGrab³
-    Copyright (C) Philipp Schmieder
+    Copyright (C) The ClipGrab Project
     http://clipgrab.de
     feedback [at] clipgrab [dot] de
 
@@ -43,7 +43,7 @@ void ffmpegThread::run()
         {
             ffmpegCall.append(" -i \"" + concatFiles.at(i)->fileName() + "\"" );
         }
-        ffmpegCall.append(" -acodec copy -vcodec copy -f mp4 \"" + concatTarget->fileName() + "\"");
+        ffmpegCall.append(" -acodec copy -vcodec copy -f " + originalFormat.split(".").at(1) + " \"" + concatTarget->fileName() + "\"");
     }
     else
     {
@@ -57,13 +57,13 @@ void ffmpegThread::run()
         ffmpeg->close();
 
         QRegExp expression;
-        expression = QRegExp("Audio: (.*),");
+        expression = QRegExp("Audio: (.*)\\n");
         expression.setMinimal(true);
         if (expression.indexIn(videoInfo) !=-1)
         {
             audioCodec = expression.cap(1);
         }
-        expression = QRegExp("Video: (.*),");
+        expression = QRegExp("Video: (.*)\\n");
         expression.setMinimal(true);
         if (expression.indexIn(videoInfo) !=-1)
         {
@@ -110,7 +110,7 @@ void ffmpegThread::run()
             {
                 if (acceptedAudioCodec[0] == "libvorbis")
                 {
-                    if (videoInfo.contains("libvorbis"))
+                    if (audioCodec.contains("libvorbis"))
                     {
                         ffmpegCall = ffmpegCall + " -acodec libvorbis -aq 9";
                     }
@@ -153,6 +153,44 @@ void ffmpegThread::run()
         ffmpegCall = ffmpegCall + " -metadata author=\"" + metaArtist + "\"";
         ffmpegCall = ffmpegCall + " -metadata artist=\"" + metaArtist + "\"";
 
+        //Determine container format if not given
+        if (container.isEmpty())
+        {
+            if (acceptedVideoCodec[0] == "none")
+            {
+                if (audioCodec.contains("libvorbis") || audioCodec.contains("vorbis"))
+                {
+                    container = "ogg";
+                }
+                else if (audioCodec.contains("libmp3lame") || audioCodec.contains("mp3"))
+                {
+                    container = "mp3";
+                }
+                else if (audioCodec.contains("libvo_aacenc") || audioCodec.contains("aac"))
+                {
+                    container = "m4a";
+                }
+                else if (audioCodec.contains("opus")) {
+                    container = "opus";
+                }
+
+            }
+        }
+
+        //Make sure not to overwrite existing files
+        QDir fileCheck;
+        if (fileCheck.exists(target + "." + container))
+        {
+            int i = 1;
+            while (fileCheck.exists(target + "-" + QString::number(i) + container))
+            {
+                i++;
+            }
+            target.append("-");
+            target.append(QString::number(i));
+        }
+
+        target.append("." + container);
         ffmpegCall = ffmpegCall + " \"" + target + "\"";
     }
 
@@ -180,6 +218,7 @@ converter_ffmpeg::converter_ffmpeg()
     this->_modes.append(tr("OGG Theora"));
     this->_modes.append(tr("MP3 (audio only)"));
     this->_modes.append(tr("OGG Vorbis (audio only)"));
+    this->_modes.append(tr("Original (audio only)"));
 }
 
 
@@ -189,21 +228,28 @@ QString converter_ffmpeg::getExtensionForMode(int mode)
     {
         case 0:
             return "mp4";
-            break;
         case 1:
             return "wmv";
-            break;
         case 2:
             return "ogg";
-            break;
         case 3:
             return "mp3";
-            break;
         case 4:
             return "ogg";
-            break;
     }
     return "";
+}
+
+bool converter_ffmpeg::isAudioOnly(int mode) {
+    switch (mode)
+    {
+        case 3:
+        case 4:
+        case 5:
+            return true;
+        default:
+        return false;
+    }
 }
 
 
@@ -213,12 +259,11 @@ void converter_ffmpeg::startConversion(QFile* inputFile, QString& target, QStrin
     QStringList acceptedAudio;
     QStringList acceptedVideo;
     QString container;
-    QDir fileCheck;
 
     switch (mode)
     {
     case 0:
-        acceptedAudio <<  "libvo_aacenc" << "aac" << "mp3";
+        acceptedAudio <<  "aac" << "libvo_aacenc" << "mp3";
         acceptedVideo << "mpeg4" << "h264";
         container = "mp4";
         break;
@@ -242,21 +287,13 @@ void converter_ffmpeg::startConversion(QFile* inputFile, QString& target, QStrin
         acceptedVideo << "none";
         container = "ogg";
         break;
+    case 5:
+        acceptedAudio << "libvorbis" << "vorbis" << "libmp3lame" << "mp3" << "wmav2" << "libvo_aaenc" << "aac" << "opus";
+        acceptedVideo << "none";
+        container = "";
+        break;
     }
 
-
-    if (fileCheck.exists(target + "." + container))
-    {
-        int i = 1;
-        while (fileCheck.exists(target + "-" + QString::number(i) + container))
-        {
-            i++;
-        }
-        target.append("-");
-        target.append(QString::number(i));
-    }
-
-    target.append("." + container);
 
     ffmpeg.inputFile = inputFile;
     ffmpeg.acceptedAudioCodec = acceptedAudio;
@@ -264,15 +301,17 @@ void converter_ffmpeg::startConversion(QFile* inputFile, QString& target, QStrin
     ffmpeg.metaTitle = metaTitle;
     ffmpeg.metaArtist = metaArtist;
     ffmpeg.target = target;
+    ffmpeg.container = container;
     connect(&ffmpeg, SIGNAL(finished()), this, SLOT(emitFinished()));
     ffmpeg.start();
 
 }
 
-void converter_ffmpeg::concatenate(QList<QFile *> files, QFile *target)
+void converter_ffmpeg::concatenate(QList<QFile *> files, QFile *target, QString originalFormat)
 {
     ffmpeg.concatFiles = files;
     ffmpeg.concatTarget = target;
+    ffmpeg.originalFormat = originalFormat;
     connect(&ffmpeg, SIGNAL(finished()), this, SLOT(emitFinished()));
     ffmpeg.start();
 
@@ -285,6 +324,7 @@ converter* converter_ffmpeg::createNewInstance()
 
 void converter_ffmpeg::emitFinished()
 {
+    this->target = ffmpeg.target;
     emit conversionFinished();
 }
 
@@ -295,7 +335,7 @@ bool converter_ffmpeg::isAvailable()
     QString ffmpegPath;
     QProcess testProcess;
 
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
         ffmpegPath =  "\"" + QApplication::applicationDirPath() + "/ffmpeg\"";
     #else
 

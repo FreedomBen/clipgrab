@@ -1,6 +1,6 @@
 /*
     ClipGrab³
-    Copyright (C) Philipp Schmieder
+    Copyright (C) The ClipGrab Project
     http://clipgrab.de
     feedback [at] clipgrab [dot] de
 
@@ -37,9 +37,10 @@ public:
     virtual void startConversion(QFile* inputFile, QString& target, QString originalExtension, QString metaTitle, QString metaArtist, int mode);
     QList<QString> getModes();
     virtual QString getExtensionForMode(int mode);
+    virtual bool isAudioOnly(int /*mode*/) { return false;};
     virtual bool isAvailable();
 
-    QString* target;
+    QString target;
 
 signals:
         void conversionFinished();

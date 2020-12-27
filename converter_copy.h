@@ -1,6 +1,6 @@
 /*
     ClipGrab³
-    Copyright (C) Philipp Schmieder
+    Copyright (C) The ClipGrab Project
     http://clipgrab.de
     feedback [at] clipgrab [dot] de
 
@@ -35,6 +35,7 @@ public:
     converter* createNewInstance();
     void startConversion(QFile* file, QString& target, QString originalExtension, QString metaTitle, QString metaArtist, int mode);
     bool isAvailable();
+    bool isAudioOnly(int /*mode*/) {return false;};
 };
 
 #endif // CONVERTER_COPY_H

@@ -1,6 +1,6 @@
 /*
     ClipGrab³
-    Copyright (C) Philipp Schmieder
+    Copyright (C) The ClipGrab Project
     http://clipgrab.de
     feedback [at] clipgrab [dot] de
 
@@ -25,10 +25,7 @@
 #define FOO_H
 
 #include <QtGui>
-
-#ifdef Q_WS_MAC64
-#include "notifications_mac.h"
-#endif
+#include <QtWidgets>
 
 class Notifications {
 public:

@@ -1,6 +1,6 @@
 /*
     ClipGrab³
-    Copyright (C) Philipp Schmieder
+    Copyright (C) The ClipGrab Project
     http://clipgrab.de
     feedback [at] clipgrab [dot] de
 
@@ -31,10 +31,10 @@ converter_copy::converter_copy()
 void converter_copy::startConversion(QFile* inputFile, QString& target, QString originalExtension, QString /*metaTitle*/, QString /*metaArtist*/, int /*mode*/)
 {
     QDir fileCheck;
-    if (fileCheck.exists(target + originalExtension))
+    if (fileCheck.exists(target + "." + originalExtension))
     {
         int i = 1;
-        while (fileCheck.exists(target + "-" + QString::number(i) + originalExtension))
+        while (fileCheck.exists(target + "-" + QString::number(i) + "." + originalExtension))
         {
             i++;
         }
@@ -43,9 +43,8 @@ void converter_copy::startConversion(QFile* inputFile, QString& target, QString 
 
     }
 
-    target.append(originalExtension);
+    target.append("." + originalExtension);
 
-    qDebug() << inputFile->fileName() << target;
     if (inputFile->copy(target))
     {
             inputFile->deleteLater();
@@ -54,6 +53,7 @@ void converter_copy::startConversion(QFile* inputFile, QString& target, QString 
     {
         emit error( "error writing data to " + target);
     }
+    this->target = target;
     emit conversionFinished();
 
 

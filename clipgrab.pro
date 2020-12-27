@@ -6,65 +6,79 @@ TARGET = clipgrab
 DEPENDPATH += . \
     release
 INCLUDEPATH += .
+QT += core \
+    widgets
+QT += gui
 QT += network
-QT += webkit
 QT += xml
-
-unix:MOC_DIR = .moc/
-unix:OBJECTS_DIR = .objects/
-unix:UI_DIR = .ui/
+QT += webenginewidgets
 
 # Input
-HEADERS += clipgrab.h \
-    converter.h \
+HEADERS += converter.h \
     converter_copy.h \
     converter_ffmpeg.h \
+    download_list_model.h \
+    helper_downloader.h \
     mainwindow.h \
     video.h \
-    video_youtube.h \
-    video_dailymotion.h \
-    video_vimeo.h \
-    video_myvideo.h \
-    video_myspass.h \
-    video_clipfish.h \
-    video_heuristic.h \
-    video_metacafe.h \
-    http_handler.h \
-    notifications.h
-FORMS += mainwindow.ui \
-    metadata-dialog.ui \
-    youtube_password.ui
-SOURCES += clipgrab.cpp \
-    converter.cpp \
+    notifications.h \
+    message_dialog.h \
+    clipgrab.h \
+    web_engine_view.h \
+    youtube_dl.h
+FORMS += metadata-dialog.ui \
+    helper_downloader.ui \
+    mainwindow.ui \
+    update_message.ui \
+    message_dialog.ui
+SOURCES += converter.cpp \
     converter_copy.cpp \
     converter_ffmpeg.cpp \
+    download_list_model.cpp \
+    helper_downloader.cpp \
     main.cpp \
     mainwindow.cpp \
     video.cpp \
-    video_youtube.cpp \
-    video_dailymotion.cpp \
-    video_vimeo.cpp \
-    video_myvideo.cpp \
-    video_myspass.cpp \
-    video_clipfish.cpp \
-    video_heuristic.cpp \
-    video_metacafe.cpp \
-    http_handler.cpp \
-    notifications.cpp
+    notifications.cpp \
+    message_dialog.cpp \
+    clipgrab.cpp \
+    web_engine_view.cpp \
+    youtube_dl.cpp
 RESOURCES += resources.qrc
-TRANSLATIONS += clipgrab_cs.ts \
+TRANSLATIONS += clipgrab_bg.ts \
+                clipgrab_bn.ts \
+                clipgrab_ca.ts \
+                clipgrab_cs.ts \
                 clipgrab_de.ts \
                 clipgrab_el.ts \
                 clipgrab_es.ts \
+                clipgrab_eu.ts \
+                clipgrab_fa.ts \
                 clipgrab_fr.ts \
                 clipgrab_fi.ts \
+                clipgrab_hr.ts \
+                clipgrab_hu.ts \
+                clipgrab_id.ts \
                 clipgrab_it.ts \
                 clipgrab_ja.ts \
+                clipgrab_ko.ts \
+                clipgrab_mk.ts \
+                clipgrab_lt.ts \
+                clipgrab_nl.ts \
+                clipgrab_no.ts \
+                clipgrab_pa.ts \
                 clipgrab_pl.ts \
                 clipgrab_pt.ts \
                 clipgrab_ro.ts \
                 clipgrab_ru.ts \
-                clipgrab_zh.ts
+                clipgrab_si.ts \
+                clipgrab_sr.ts \
+                clipgrab_sv.ts \
+                clipgrab_sw.ts \
+                clipgrab_tr.ts \
+                clipgrab_vi.ts \
+                clipgrab_zh.ts \
+                clipgrab_strings.ts
 CODECFORTR = UTF-8
 win32:RC_FILE = windows_icon.rc
 macx { 
@@ -72,10 +86,7 @@ macx {
     ICON = clipgrab.icns
     RC_FILE = clipgrab.icns
     QMAKE_INFO_PLIST = ClipGrab.plist
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
-    OBJECTIVE_HEADERS += notifications_mac.h
-    OBJECTIVE_SOURCES += notifications_mac.mm
-    LIBS += -framework Foundation
-    INCLUDEPATH += /System/Library/Frameworks/Foundation.framework/Versions/C/Headers
+    LIBS += -framework AppKit -framework Foundation
 }
-VERSION = 3.4.2
+VERSION = 3.9.6
+DEFINES += CLIPGRAB_VERSION=$$VERSION

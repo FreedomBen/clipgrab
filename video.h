@@ -1,6 +1,6 @@
 /*
     ClipGrab³
-    Copyright (C) Philipp Schmieder
+    Copyright (C) The ClipGrab Project
     http://clipgrab.de
     feedback [at] clipgrab [dot] de
 
@@ -26,159 +26,125 @@
 
 #include <QtGui>
 #include <QtNetwork>
+#include <QtWidgets>
+#include <QDebug>
 #include "converter.h"
-#include "converter_ffmpeg.h"
-#include "http_handler.h"
+#include "youtube_dl.h"
 
 struct videoQuality
 {
-    QString quality;
-    QString videoUrl;
-    QString audioUrl;
+    QString name;
+    QString videoFormat;
+    QString audioFormat;
+    QString videoCodec;
+    QString audioCodec;
     QString containerName;
-    bool chunkedDownload;
+    qint64 videoFileSize;
+    qint64 audioFileSize;
+    int resolution;
 
-    videoQuality()
-    {
-        quality = "standard";
-        chunkedDownload = false;
-    }
+    videoQuality(QString name) : name(name) {};
+    videoQuality(QString name, QString videoFormat) : name(name), videoFormat(videoFormat) {};
 
-    videoQuality(QString Quality, QString VideoUrl)
+    bool operator<(videoQuality _other) const
     {
-        quality = Quality;
-        videoUrl = VideoUrl;
-        chunkedDownload = false;
-    }
-
-    videoQuality(QString Quality, QString VideoUrl, bool ChunkedDownload)
-    {
-        quality = Quality;
-        videoUrl = VideoUrl;
-        chunkedDownload = ChunkedDownload;
+        return false;
+        // TODO! Implement comparison!
     }
 };
 
 class video : public QObject
 {
     Q_OBJECT
+
 public:
     video();
 
-    virtual video* createNewInstance();
+    enum class state {empty, error, unfetched, fetching, fetched, downloading, converting, pausing, paused, canceling, canceled, finished};
 
-    bool _finished;
-
-    //*
-    //*Portal Information
-    //*
-    QIcon* getIcon();
-    QString getName();
-    bool supportsSearch();
-    bool compatibleWithUrl(QString);
-
-    //*
-    //*Portal Access
-    //*
-    QString getSearch(QString);
+    operator QString() const { return "<video:" + title + ":" + url + ">"; }
 
     //*
     //*Video Access
     //*
-    virtual bool setUrl(QString);
-    virtual void analyse();
+
+    void fetchPlaylistInfo(QString url);
+    virtual void fetchInfo(QString url);
+    virtual void fromJson(QByteArray data);
     virtual void download();
-    void setQuality(int);
-    QString quality();
-    QString title();
-    void setTreeItem(QTreeWidgetItem* item);
-    virtual QList<QString> getSupportedQualities();
-    void setFormat(int format);
-    QProgressBar* _progressBar; //fixme!
-    void setTargetPath(QString target);
-    QString getSaveTitle();
-    QString getSaveFileName();
-    QString getTargetPath();
+    virtual void pause();
+    virtual void resume();
+    virtual void cancel();
+    virtual void restart();
 
-    void setMetaTitle(QString);
-    void setMetaArtist(QString);
-    QString metaTitle();
-    QString metaArtist();
+    virtual QString getPortalName();
+    virtual QString getTargetFormatName();
+    virtual QString getTitle();
+    virtual QString getArtist();
+    virtual QString getUrl();
+    virtual QString getThumbnail();
+    virtual qint64 getDuration();
+    QList<videoQuality> getQualities();
+    virtual QString getSelectedQualityName();
+    virtual QString getSafeFilename();
+    QString getTargetFilename() {return targetFilename;};
+    QString getFinalFilename() {return finalFilename;};
+    virtual state getState() {return state;};
+    virtual qint64 getDownloadSize();
+    virtual qint64 getDownloadProgress();
 
-    void setConverter(converter* converter, int mode);
+    virtual QList<video*> getPlaylistVideos();
 
-    QTreeWidgetItem* treeItem();
-
-    void togglePause();
-    bool isDownloadPaused();
-
-    QPair<qint64, qint64> downloadProgress();
-    void cancel();
-
+    virtual void setMetaTitle(QString title);
+    virtual void setMetaArtist(QString artist);
+    virtual void setTargetFilename(QString filename);
+    virtual void setConverter(converter*, int);
+    virtual bool setQuality(int n);
 
 protected:
-    //*
-    //*Portal Information
-    //*
-    QString _name;
-    QList<QRegExp> _urlRegExp;
-    QIcon* _icon;
-    bool _supportsTitle;
-    bool _supportsDescription;
-    bool _supportsThumbnail;
-    bool _supportsSearch;
-    QList<videoQuality> _supportedQualities;
-    converter* _converter;
-    int _converterMode;
+    QString url;
+    QString portal;
+    QString id;
+    QString title;
+    QString artist;
+    QString metaTitle;
+    QString metaArtist;
+    int duration;
+    int selectedQuality;
+    QList<videoQuality> qualities;
 
-    //*
-    //*Video Informatoin
-    //*
-    QUrl _url;
-    QUrl _urlThumbnail;
-    QString _targetPath;
-    bool _chunkedDownload;
+    QStringList downloadFilenames;
+    qint64 downloadSize;
+    QList<qint64> downloadSizeEstimates;
+    qint64 cachedDownloadSize;
+    qint64 cachedDownloadProgress;
 
-    QString _title;
+    QString finalDownloadFilename;
+    QProcess* youtubeDl;
+    void startYoutubeDl(QStringList);
+    video::state state;
 
-    int _format;
-    int _quality;
-    QByteArray _videoData;
+    bool audioOnly;
+    converter* targetConverter;
+    int targetConverterMode;
+    QString targetFilename;
+    QString finalFilename;
 
-    QString _metaTitle;
-    QString _metaArtist;
+    QList<video*> playlistVideos;
+
+    void handleProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void handleProcessReadyRead();
+    void handleInfoJson(QByteArray);
+    void handleDownloadInfo(QString line);
+    void handleConversionFinished();
+    void handleConversionError(QString);
+    void removeTempFiles();
 
 
-
-
-    //*
-    //*Processing
-    //*
-    http_handler* handler;
-    QFile* downloadFile;
-	QPair<qint64, qint64> cachedProgress;
-
-    int _step;
-    virtual void parseVideo(QString);
-
-    QTreeWidgetItem* _treeItem;
-
-    protected slots:
-        virtual void handleDownloads();
-        void changeProgress(qint64, qint64);
-        virtual void startConvert();
-        void conversionFinished();
-        virtual void slotAnalysingFinished();
-        virtual void networkError(QString error);
-
-    signals:
-        void error(QString);
-        void error(QString, video*);
-        void progressChanged(int, int);
-        void stateChanged(QString);
-        void downloadFinished();
-        void analysingFinished();
-        void conversionFinished(video*);
+signals:
+    void infoReady();
+    void stateChanged();
+    void downloadProgressChanged(qint64, qint64);
 };
 
 #endif // ABSTRACT_video_H

@@ -1,6 +1,6 @@
 /*
     ClipGrab³
-    Copyright (C) Philipp Schmieder
+    Copyright (C) The ClipGrab Project
     http://clipgrab.de
     feedback [at] clipgrab [dot] de
 
@@ -23,21 +23,28 @@
 
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
+MainWindow::MainWindow(ClipGrab* cg, QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
 {
+    this->cg = cg;
     ui.setupUi(this);
-    currentVideo = NULL;
-    searchReply = NULL;
 }
 
 
 MainWindow::~MainWindow()
 {
+    delete this->searchPage;
 }
 
 void MainWindow::init()
 {
+    DownloadListModel* l = new DownloadListModel(cg, this);
+    this->ui.downloadTree->setModel(l);
+    connect(ui.downloadTree, &QTreeView::dataChanged,[=] {
+        handle_downloadTree_currentChanged(ui.downloadTree->currentIndex(), QModelIndex());
+    });
+    connect(cg, &ClipGrab::downloadFinished, this, &MainWindow::handleFinishedConversion);
+
     //*
     //* Adding version info to the footer
     //*
@@ -54,19 +61,29 @@ void MainWindow::init()
     //*
     //* Clipboard Handling
     //*
-    connect(cg, SIGNAL(compatiblePortalFound(bool, video*)), this, SLOT(compatiblePortalFound(bool, video*)));
     connect(cg, SIGNAL(compatibleUrlFoundInClipboard(QString)), this, SLOT(compatibleUrlFoundInClipBoard(QString)));
 
     //*
     //* Download Tab
     //*
     connect(ui.downloadStart, SIGNAL(clicked()), this, SLOT(startDownload()));
-    connect(ui.downloadLineEdit, SIGNAL(textChanged(QString)), cg, SLOT(determinePortal(QString)));
-    connect(this, SIGNAL(itemToCancel(int)), cg, SLOT(cancelDownload(int)));
-    //connect(ui.downloadTree, SIGNAL(doubleClicked(QModelIndex)), this, openFinishedVideo(QModelIndex));
-    ui.downloadTree->header()->setResizeMode(1, QHeaderView::Stretch);
+    connect(ui.downloadLineEdit, &QLineEdit::textChanged, [=](const QString url) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) return;
+
+        ui.downloadLineEdit->setReadOnly(true);
+        ui.downloadInfoBox->setText(tr("Please wait while ClipGrab is loading information about the video ..."));
+        disableDownloadUi();
+        cg->fetchVideoInfo(url);
+    });
+    connect(cg, &ClipGrab::currentVideoStateChanged, this, &MainWindow::handleCurrentVideoStateChanged);
+
+    connect(ui.downloadTree->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::handle_downloadTree_currentChanged);
     ui.downloadTree->header()->setStretchLastSection(false);
-    ui.downloadTree->header()->setResizeMode(3, QHeaderView::ResizeToContents);
+    ui.downloadTree->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    ui.downloadTree->header()->setSectionResizeMode(1, QHeaderView::Stretch);
+    ui.downloadTree->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    ui.downloadTree->header()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    ui.downloadTree->header()->setSectionResizeMode(4, QHeaderView::ResizeToContents);
     ui.downloadLineEdit->setFocus(Qt::OtherFocusReason);
 
     int lastFormat = cg->settings.value("LastFormat", 0).toInt();
@@ -74,19 +91,27 @@ void MainWindow::init()
     {
         this->ui.downloadComboFormat->addItem(this->cg->formats.at(i)._name);
     }
-    //"Fix" for Meego: this->ui.downloadComboFormat->addItem(this->cg->formats.at(0)._name);
 
     this->ui.downloadComboFormat->setCurrentIndex(lastFormat);
-
-    ui.downloadPause->hide(); //Qt does currently not handle throttling downloads properly
 
 
     //*
     //* Search Tab
     //*
-    this->ui.searchWebView->setContextMenuPolicy(Qt::NoContextMenu);
-
-    this->searchNam = new QNetworkAccessManager();
+    QWebEngineProfile* profile = new QWebEngineProfile;
+    this->searchPage = new SearchWebEnginePage(profile);
+    ui.searchWebEngineView->setPage(searchPage);
+    ui.searchWebEngineView->settings()->setAttribute(QWebEngineSettings::FocusOnNavigationEnabled, false);
+    ui.searchWebEngineView->setContextMenuPolicy(Qt::NoContextMenu);
+    connect(ui.searchWebEngineView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(handleSearchResultClicked(QUrl)));
+    connect(&searchTimer, SIGNAL(timeout()), this, SLOT(searchTimerTimeout()));
+    connect(cg, &ClipGrab::youtubeDlDownloadFinished, [=] {
+        YoutubeDl::find(true);
+        this->updateSearch("");
+        this->updateYoutubeDlVersionInfo();
+    });
+    connect(cg, &ClipGrab::searchFinished, this, &MainWindow::handleSearchResults);
+    cg->search();
 
     //*
     //* Settings Tab
@@ -99,13 +124,12 @@ void MainWindow::init()
     connect(this->ui.settingsRadioNotificationsNever, SIGNAL(toggled(bool)), this, SLOT(settingsNotifications_toggled(bool)));
 
 
-    this->ui.settingsSavedPath->setText(cg->settings.value("savedPath", QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)).toString());
+    this->ui.settingsSavedPath->setText(cg->settings.value("savedPath", QStandardPaths::writableLocation(QStandardPaths::DesktopLocation)).toString());
     this->ui.settingsSaveLastPath->setChecked(cg->settings.value("saveLastPath", true).toBool());
     ui.settingsNeverAskForPath->setChecked(cg->settings.value("NeverAskForPath", false).toBool());
 
     ui.settingsUseMetadata->setChecked(cg->settings.value("UseMetadata", false).toBool());
     connect(this->ui.settingsUseMetadata, SIGNAL(stateChanged(int)), this, SLOT(on_settingsUseMetadata_stateChanged(int)));
-
 
     ui.settingsUseProxy->setChecked(cg->settings.value("UseProxy", false).toBool());
     ui.settingsProxyAuthenticationRequired->setChecked(cg->settings.value("ProxyAuthenticationRequired", false).toBool());
@@ -150,9 +174,15 @@ void MainWindow::init()
     {
         ui.settingsRadioNotificationsNever->setChecked(true);
     }
-    ui.settingsUseWebM->setChecked(cg->settings.value("UseWebM", false).toBool());
 
-    ui.settingsRemoveFinishedDownloads->setChecked(cg->settings.value("RemoveFinishedDownloads", false).toBool());
+      ui.settingsUseWebM->setChecked(cg->settings.value("UseWebM", false).toBool());
+      ui.settingsRememberVideoQuality->setChecked(cg->settings.value("rememberVideoQuality", true).toBool());
+      ui.settingsRememberLogins->hide();
+//    ui.settingsRememberLogins->setChecked(cg->settings.value("rememberLogins", true).toBool());
+      ui.settingsRemoveFinishedDownloads->setChecked(cg->settings.value("RemoveFinishedDownloads", false).toBool());
+      ui.settingsIgnoreSSLErrors->hide();
+//    ui.settingsIgnoreSSLErrors->setChecked(cg->settings.value(("IgnoreSSLErrors"), false).toBool());
+      ui.settingsForceIpV4->setChecked(cg->settings.value("forceIpV4", false).toBool());
 
 
     int langIndex = 0;
@@ -172,147 +202,166 @@ void MainWindow::init()
 
     this->ui.tabWidget->removeTab(2); //fixme!
 
-    startTimer(500);
-
     //*
     //* About Tab
     //*
 
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
         this->ui.downloadOpen->hide();
         this->cg->settings.setValue("Clipboard", "always");
         this->ui.generalSettingsTabWidget->removeTab(2);
-        this->setStyleSheet("#label_4{padding-top:25px}#label{font-size:10px}#centralWidget{background:#fff};#mainTab{margin-top;-20px};#label_4{padding:10px}#downloadInfoBox, #settingsGeneralInfoBox, #settingsLanguageInfoBox, #aboutInfoBox, #searchInfoBox{color: background: #00B4DE;}");
-        this->ui.label_4->setMinimumHeight(120);
+        //FIXME this->setStyleSheet("#label_4{padding-top:25px}#label{font-size:10px}#centralWidget{background:#fff};#mainTab{margin-top;-20px};#label_4{padding:10px}#downloadInfoBox, #settingsGeneralInfoBox, #settingsLanguageInfoBox, #aboutInfoBox, #searchInfoBox{color: background: #00B4DE;}");
+        // this->ui.label_4->setMinimumHeight(120);
     #endif
+    updateYoutubeDlVersionInfo();
 
+    //*
+    //* Drag and Drop
+    //*
+    this->setAcceptDrops(true);
+    this->ui.searchWebEngineView->setAcceptDrops(false);
 
-   on_searchLineEdit_textChanged("");
-   this->ui.mainTab->setCurrentIndex(cg->settings.value("MainTab", 0).toInt());
+    //*
+    //*Keyboard shortcuts
+    //*
+    QSignalMapper* tabShortcutMapper = new QSignalMapper(this);
+
+    QShortcut* tabShortcutSearch = new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_1), this);
+    tabShortcutMapper->setMapping(tabShortcutSearch, 0);
+    QShortcut* tabShortcutDownload = new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_2), this);
+    tabShortcutMapper->setMapping(tabShortcutDownload, 1);
+    QShortcut* tabShortcutSettings = new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_3), this);
+    tabShortcutMapper->setMapping(tabShortcutSettings, 2);
+    QShortcut* tabShortcutAbout = new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_4), this);
+    tabShortcutMapper->setMapping(tabShortcutAbout, 3);
+
+    connect(tabShortcutSearch, SIGNAL(activated()), tabShortcutMapper, SLOT(map()));
+    connect(tabShortcutDownload, SIGNAL(activated()), tabShortcutMapper, SLOT(map()));
+    connect(tabShortcutSettings, SIGNAL(activated()), tabShortcutMapper, SLOT(map()));
+    connect(tabShortcutAbout, SIGNAL(activated()), tabShortcutMapper, SLOT(map()));
+    connect(tabShortcutMapper, SIGNAL(mapped(int)), this->ui.mainTab, SLOT(setCurrentIndex(int)));
+
+    //*
+    //*Miscellaneous
+    //*
+    this->ui.mainTab->setCurrentIndex(cg->settings.value("MainTab", 0).toInt());
+
+    //Prevent updating remembered resolution when updating programatically
+    this->updatingComboQuality = false;
+
+    #ifdef Q_OS_MACX
+    //fixme
+    //if ( QSysInfo::MacintoshVersion > QSysInfo::MV_10_8 )
+    //{
+        // fix Mac OS X 10.9 (mavericks) font issue
+        // https://bugreports.qt-project.org/browse/QTBUG-32789
+        QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
+    //}
+    #endif
 }
 
-void MainWindow::startDownload()
-{
-    QTreeWidgetItem* tmpItem = new QTreeWidgetItem(QStringList() << currentVideo->getName() << currentVideo->title() << ui.downloadComboFormat->currentText());
-    tmpItem->setSizeHint(0, QSize(16, 24));
-    currentVideo->setTreeItem(tmpItem);
-    currentVideo->setQuality(ui.downloadComboQuality->currentIndex());
-    currentVideo->setConverter(cg->formats.at(ui.downloadComboFormat->currentIndex())._converter->createNewInstance(),cg->formats.at(ui.downloadComboFormat->currentIndex())._mode);
-    QString target;
-    if (cg->settings.value("NeverAskForPath", false).toBool() == false)
-    {
-        target = QFileDialog::getSaveFileName(this, tr("Select Target"), cg->settings.value("savedPath", QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)).toString() +"/" + currentVideo->getSaveTitle());
+void MainWindow::startDownload() {
+    video* video = cg->getCurrentVideo();
+    if (video  == nullptr) return;
 
-    }
-    else
-    {
-        target = cg->settings.value("savedPath", QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)).toString() +"/"+currentVideo->getSaveTitle();
-    }
-    if (!target.isEmpty())
-    {
-        if (cg->settings.value("saveLastPath", true) == true)
-        {
-            QString targetDir = target;
-            targetDir.remove(targetDir.split("/", QString::SkipEmptyParts).last()).replace(QRegExp("/+"), "/");
-            ui.settingsSavedPath->setText(targetDir);
-        }
-        currentVideo->setTargetPath(target);
+    QString targetDirectory = cg->settings.value("savedPath", QStandardPaths::writableLocation(QStandardPaths::DesktopLocation)).toString();
+    QString filename = video->getSafeFilename();
 
-        if (cg->settings.value("UseMetadata", false).toBool() == true)
-        {
-            if (ui.downloadComboFormat->currentIndex() == 4 || ui.downloadComboFormat->currentIndex() == 5)
-            {
-                metadataDialog = new QDialog;
-                mdui.setupUi(metadataDialog);
-                mdui.title->setText(currentVideo->title());
-                metadataDialog->setModal(true);
-                metadataDialog->exec();
+    qDebug() << targetDirectory << filename;
 
-                currentVideo->setMetaTitle(mdui.title->text());
-                currentVideo->setMetaArtist(mdui.artist->text());
-
-                delete metadataDialog;
-            }
-        }
-
-        cg->addDownload(currentVideo);
-        ui.downloadTree->insertTopLevelItem(0, tmpItem);
-
-        currentVideo->_progressBar = new QProgressBar();
-        currentVideo->_progressBar->setValue(0);
-        currentVideo->_progressBar->setMaximum(1);
-        ui.downloadTree->setItemWidget(tmpItem, 3, currentVideo->_progressBar);
-
-        ((QProgressBar*) ui.downloadTree->itemWidget(tmpItem, 3))->setMaximum(100);
-        connect(currentVideo, SIGNAL(progressChanged(int,int)),ui.downloadTree, SLOT(update()));
-        connect(currentVideo, SIGNAL(downloadFinished()), currentVideo, SLOT(startConvert()));
-        connect(currentVideo, SIGNAL(conversionFinished(video*)), this, SLOT(handleFinishedConversion(video*)));
-        currentVideo = NULL;
-        ui.downloadLineEdit->clear();
+    if (cg->settings.value("NeverAskForPath", false).toBool() == false) {
+       targetFileSelected(video, QFileDialog::getSaveFileName(this, tr("Select Target"), targetDirectory +"/" + filename));
+    } else {
+        targetFileSelected(video, targetDirectory + "/" + filename);
     }
 }
 
-void MainWindow::compatiblePortalFound(bool found, video* portal)
+void MainWindow::targetFileSelected(video* video, QString target)
 {
-    disableDownloadUi(true);
-    ui.downloadComboQuality->clear();;
-    if (found == true)
-    {
-        ui.downloadLineEdit->setReadOnly(true);
-        ui.downloadInfoBox->setText(tr("Please wait while ClipGrab is loading information about the video ..."));
+    if (target.isEmpty()) return;
 
-        if (currentVideo)
-        {
-            currentVideo->deleteLater();;
-        }
-        currentVideo = portal->createNewInstance();
-        currentVideo->setUrl(ui.downloadLineEdit->text());
-        connect(currentVideo, SIGNAL(error(QString,video*)), cg, SLOT(errorHandler(QString,video*)));
-        connect(currentVideo, SIGNAL(analysingFinished()), this, SLOT(updateVideoInfo()));
-        currentVideo->analyse();
-
+    QDir targetDir = QFileInfo(target).absoluteDir();
+    if (!targetDir.exists()) {
+        ui.settingsNeverAskForPath->setChecked(false);
+        this->startDownload();
+        return;
     }
-    else
-    {
-        if (ui.downloadLineEdit->text() == "")
-        {
-            ui.downloadInfoBox->setText(tr("Please enter the link to the video you want to download in the field below."));
-        }
-        else if (ui.downloadLineEdit->text().startsWith("http://") || ui.downloadLineEdit->text().startsWith("https://"))
-        {            
-            ui.downloadLineEdit->setReadOnly(true);
-            ui.downloadInfoBox->setText(tr("The link you have entered seems to not be recognised by any of the supported portals.<br/>Now ClipGrab will check if it can download a video from that site anyway."));
 
-            if (currentVideo)
-            {
-                currentVideo->deleteLater();;
-            }
-            currentVideo = cg->heuristic->createNewInstance();
-            currentVideo->setUrl(ui.downloadLineEdit->text());
-            connect(currentVideo, SIGNAL(error(QString,video*)), cg, SLOT(errorHandler(QString,video*)));
-            connect(currentVideo, SIGNAL(analysingFinished()), this, SLOT(updateVideoInfo()));
-            currentVideo->analyse();
+    if (cg->settings.value("saveLastPath", true).toBool() == true) {
+        QString targetDir = target;
+        targetDir.remove(targetDir.split("/", QString::SkipEmptyParts).last()).replace(QRegExp("/+$"), "/");
+        ui.settingsSavedPath->setText(targetDir);
+    }
+
+    if (cg->settings.value("UseMetadata", false).toBool() == true) {
+        if (ui.downloadComboFormat->currentIndex() == 4 || ui.downloadComboFormat->currentIndex() == 5) {
+            metadataDialog = new QDialog;
+            mdui.setupUi(metadataDialog);
+            mdui.title->setText(video->getTitle());
+            mdui.artist->setText(video->getArtist());
+            metadataDialog->setModal(true);
+            metadataDialog->exec();
+
+            video->setMetaTitle(mdui.title->text());
+            video->setMetaArtist(mdui.artist->text());
+
+            delete metadataDialog;
         }
     }
+
+    video->setQuality(ui.downloadComboQuality->currentIndex());
+    video->setConverter(cg->formats.at(ui.downloadComboFormat->currentIndex())._converter, cg->formats.at(ui.downloadComboFormat->currentIndex())._mode);
+    video->setTargetFilename(target);
+    cg->enqueueDownload(video);
+    ui.downloadLineEdit->clear();
+    cg->clearCurrentVideo();
 }
 
-void MainWindow::updateVideoInfo()
-{
-    if (currentVideo && currentVideo->title() != "" && !currentVideo->getSupportedQualities().isEmpty())
-    {
-        ui.downloadInfoBox->setText("<strong>" + currentVideo->title() + "</strong>");
-        ui.downloadLineEdit->setReadOnly(false);
-        disableDownloadUi(false);
-        ui.downloadComboQuality->clear();
-        ui.downloadComboQuality->addItems(currentVideo->getSupportedQualities());
+void MainWindow::handleCurrentVideoStateChanged(video* video) {
+    if (video != cg->getCurrentVideo()) return;
+
+    if (video == nullptr) {
+        ui.downloadInfoBox->setText(tr("Please enter the link to the video you want to download in the field below."));
+        disableDownloadUi(true);
+        return;
     }
-    else
-    {
+
+    if (video->getState() == video::state::error) {
         ui.downloadInfoBox->setText(tr("No downloadable video could be found.<br />Maybe you have entered the wrong link or there is a problem with your connection."));
         ui.downloadLineEdit->setReadOnly(false);
         disableDownloadUi(true);
     }
+
+    if (video->getState() != video::state::fetched) return;
+
+    ui.mainTab->setCurrentIndex(1);
+    disableDownloadUi(false);
+    ui.downloadLineEdit->setReadOnly(false);
+    ui.downloadInfoBox->setText("<strong>" + video->getTitle() + "</strong>");
+
+    this->updatingComboQuality = true;
+    ui.downloadComboQuality->clear();
+    QList<videoQuality> qualities = video->getQualities();
+    for (int i = 0; i < qualities.size(); i++) {
+        ui.downloadComboQuality->addItem(qualities.at(i).name, qualities.at(i).resolution);
+    }
+
+    if (cg->settings.value("rememberVideoQuality", true).toBool()) {
+        int rememberedResolution = cg->settings.value("rememberedVideoQuality", -1).toInt();
+        int bestResolutionMatch = 0;
+        int bestResolutionMatchPosition = 0;
+        for (int i = 0; i < qualities.length(); i++) {
+            int resolution = qualities.at(i).resolution;
+            if (resolution <= rememberedResolution && resolution > bestResolutionMatch) {
+                bestResolutionMatch = resolution;
+                bestResolutionMatchPosition = i;
+            }
+        }
+        ui.downloadComboQuality->setCurrentIndex(bestResolutionMatchPosition);
+    }
+    this->updatingComboQuality = false;
 }
+
 void MainWindow::on_settingsSavedPath_textChanged(QString string)
 {
     this->cg->settings.setValue("savedPath", string);
@@ -328,50 +377,40 @@ void MainWindow::on_settingsBrowseTargetPath_clicked()
     }
 }
 
-void MainWindow::on_downloadCancel_clicked()
-{
-    if (ui.downloadTree->currentIndex().row() != -1)
-    {
-        int item = ui.downloadTree->topLevelItemCount() - ui.downloadTree->currentIndex().row() -1;
-        ui.downloadTree->takeTopLevelItem(ui.downloadTree->currentIndex().row());
-        emit itemToCancel(item);
+void MainWindow::on_downloadCancel_clicked() {
+    video* selectedVideo = ((DownloadListModel*) ui.downloadTree->model())->getVideo(ui.downloadTree->currentIndex());
+    if (selectedVideo == nullptr) return;
+
+    selectedVideo->cancel();
+}
+
+void MainWindow::on_downloadPause_clicked() {
+    video* selectedVideo = ((DownloadListModel*) ui.downloadTree->model())->getVideo(ui.downloadTree->currentIndex());
+    if (selectedVideo == nullptr) return;
+
+    if (selectedVideo->getState() == video::state::paused) {
+        selectedVideo->resume();
+        return;
     }
+    selectedVideo->pause();
+}
+
+void MainWindow::on_downloadOpen_clicked() {
+    video* selectedVideo = ((DownloadListModel*) ui.downloadTree->model())->getVideo(ui.downloadTree->currentIndex());
+    if (selectedVideo == nullptr) return;
+    cg->openTargetFolder(selectedVideo);
 }
 
 void MainWindow::on_settingsSaveLastPath_stateChanged(int state)
 {
-    if (state == Qt::Checked)
-    {
-        cg->settings.setValue("saveLastPath", true);
-    }
-    else
-    {
-        cg->settings.setValue("saveLastPath", false);
-    }
+    cg->settings.setValue("saveLastPath", state == Qt::Checked);
 }
 
-void MainWindow::on_downloadOpen_clicked()
-{
-    if (ui.downloadTree->currentIndex().row() != -1)
-    {
-        QString targetDir;
-        targetDir = cg->getDownloadTargetPath(ui.downloadTree->topLevelItemCount()-1 - ui.downloadTree->currentIndex().row());
-        targetDir.remove(targetDir.split("/").last());
-        QDesktopServices::openUrl(targetDir);
-    }
-}
-
-
-void MainWindow::compatibleUrlFoundInClipBoard(QString url)
-{
-    if (QApplication::activeModalWidget() == 0)
-    {
-        if (cg->settings.value("Clipboard", "ask") == "ask")
-        {
+void MainWindow::compatibleUrlFoundInClipBoard(QString url) {
+    if (QApplication::activeModalWidget() == nullptr) {
+        if (cg->settings.value("Clipboard", "ask") == "ask") {
             Notifications::showMessage(tr("ClipGrab: Video discovered in your clipboard"), tr("ClipGrab has discovered the address of a compatible video in your clipboard. Click on this message to download it now."), &systemTrayIcon);
-        }
-        else if (cg->settings.value("Clipboard", "ask") == "always")
-        {
+        } else if (cg->settings.value("Clipboard", "ask") == "always") {
             this->ui.downloadLineEdit->setText(url);
             this->ui.mainTab->setCurrentIndex(1);
             this->setWindowState((windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
@@ -380,13 +419,10 @@ void MainWindow::compatibleUrlFoundInClipBoard(QString url)
             this->raise();
         }
     }
-
 }
 
-void MainWindow::systemTrayMessageClicked()
-{
-    if (QApplication::activeModalWidget() == 0)
-    {
+void MainWindow::systemTrayMessageClicked() {
+    if (QApplication::activeModalWidget() == nullptr) {
         this->ui.downloadLineEdit->setText(cg->clipboardUrl);
         this->ui.mainTab->setCurrentIndex(1);
         this->setWindowState((windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
@@ -394,18 +430,12 @@ void MainWindow::systemTrayMessageClicked()
         this->activateWindow();
         this->raise();
     }
-    
-
 }
 
-void MainWindow::systemTrayIconActivated(QSystemTrayIcon::ActivationReason)
-{
-    if (cg->settings.value("MinimizeToTray", false).toBool() && !this->isHidden())
-    {
+void MainWindow::systemTrayIconActivated(QSystemTrayIcon::ActivationReason) {
+    if (cg->settings.value("MinimizeToTray", false).toBool() && !this->isHidden()) {
         this->hide();
-    }
-    else
-    {
+    } else {
         this->setWindowState((windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
         this->show();
         this->activateWindow();
@@ -415,16 +445,11 @@ void MainWindow::systemTrayIconActivated(QSystemTrayIcon::ActivationReason)
 
 void MainWindow::settingsClipboard_toggled(bool)
 {
-    if (ui.settingsRadioClipboardAlways->isChecked())
-    {
+    if (ui.settingsRadioClipboardAlways->isChecked()) {
         cg->settings.setValue("Clipboard", "always");
-    }
-    else if (ui.settingsRadioClipboardNever->isChecked())
-    {
+    } else if (ui.settingsRadioClipboardNever->isChecked()) {
         cg->settings.setValue("Clipboard", "never");
-    }
-    else if (ui.settingsRadioClipboardAsk->isChecked())
-    {
+    } else if (ui.settingsRadioClipboardAsk->isChecked()) {
         cg->settings.setValue("Clipboard", "ask");
     }
 }
@@ -445,110 +470,68 @@ void MainWindow::disableDownloadTreeButtons(bool disable)
     ui.downloadPause->setDisabled(disable);
 }
 
-void MainWindow::on_downloadTree_currentItemChanged(QTreeWidgetItem* /*current*/, QTreeWidgetItem* /*previous*/)
+void MainWindow::handle_downloadTree_currentChanged(const QModelIndex &current, const QModelIndex & /*previous*/)
 {
-    if (ui.downloadTree->currentIndex().row() == -1)
-    {
+    video* selectedVideo = ((DownloadListModel*) ui.downloadTree->model())->getVideo(current);
+    if (selectedVideo == nullptr) {
         disableDownloadTreeButtons();
-    }
-    else
-    {
+    } else {
         disableDownloadTreeButtons(false);
+        if (selectedVideo->getState() == video::state::finished || selectedVideo->getState() == video::state::canceled) {
+            ui.downloadCancel->setDisabled(true);
+            ui.downloadPause->setDisabled(true);
+        }
     }
 }
 
 void MainWindow::on_settingsNeverAskForPath_stateChanged(int state)
 {
-    if (state == Qt::Checked)
-    {
-        cg->settings.setValue("NeverAskForPath", true);
-    }
-    else
-    {
-        cg->settings.setValue("NeverAskForPath", false);
-    }
+    cg->settings.setValue("NeverAskForPath", state == Qt::Checked);
 }
 
- void MainWindow::closeEvent(QCloseEvent *event)
- {
-    if (cg->downloadsRunning() > 0)
-    {
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (cg->getRunningDownloadsCount() > 0) {
         QMessageBox* exitBox;
         exitBox = new QMessageBox(QMessageBox::Question, tr("ClipGrab - Exit confirmation"), tr("There is still at least one download in progress.<br />If you exit the program now, all downloads will be canceled and cannot be recovered later.<br />Do you really want to quit ClipGrab now?"), QMessageBox::Yes|QMessageBox::No);
-        if (exitBox->exec() == QMessageBox::Yes)
-        {
-            event->accept();
-        }
-        else
-        {
+        if (exitBox->exec() == QMessageBox::Yes) {
+            systemTrayIcon.hide();
+            connect(cg, &ClipGrab::allDownloadsCanceled, [event] {
+                event->accept();
+            });
+            cg->cancelAllDownloads();
+        } else {
             event->ignore();
         }
+    } else {
+        systemTrayIcon.hide();
+        event->accept();
     }
-    else
-    {
-       event->accept();;
-    }
- }
+}
 
- void MainWindow::settingsNotifications_toggled(bool)
- {
-    if (ui.settingsRadioNotificationsAlways->isChecked())
-    {
+void MainWindow::settingsNotifications_toggled(bool) {
+    if (ui.settingsRadioNotificationsAlways->isChecked()) {
         cg->settings.setValue("Notifications", "always");
-    }
-    else if (ui.settingsRadioNotificationsFinish->isChecked())
-    {
+    } else if (ui.settingsRadioNotificationsFinish->isChecked()) {
         cg->settings.setValue("Notifications", "finish");
-    }
-    else if (ui.settingsRadioNotificationsNever->isChecked())
-    {
+    } else if (ui.settingsRadioNotificationsNever->isChecked()) {
         cg->settings.setValue("Notifications", "never");
     }
- }
+}
 
- void MainWindow::handleFinishedConversion(video* finishedVideo)
- {
-     if (cg->settings.value("Notifications", "finish") == "always")
-     {
-         Notifications::showMessage(tr("Download finished"), tr("Downloading and converting “%title” is now finished.").replace("%title", finishedVideo->title()), &systemTrayIcon);
-     }
-     else if (cg->downloadsRunning() == 0 && cg->settings.value("Notifications", "finish") == "finish")
-     {
+void MainWindow::handleFinishedConversion(video* finishedVideo) {
+     if (cg->settings.value("Notifications", "finish") == "always") {
+         Notifications::showMessage(tr("Download finished"), tr("Downloading and converting “%title” is now finished.").replace("%title", finishedVideo->getTitle()), &systemTrayIcon);
+     } else if (cg->getRunningDownloadsCount() == 0 && cg->settings.value("Notifications", "finish") == "finish") {
          Notifications::showMessage(tr("All downloads finished"), tr("ClipGrab has finished downloading and converting all selected videos."), &systemTrayIcon);
      }
-
-     if (cg->settings.value("RemoveFinishedDownloads", false) == true)
-     {
-         int finishedItemIndex = ui.downloadTree->indexOfTopLevelItem(finishedVideo->treeItem());
-         int item = ui.downloadTree->topLevelItemCount() - finishedItemIndex -1;
-         ui.downloadTree->takeTopLevelItem(finishedItemIndex);
-         emit itemToCancel(item);
-     }
- }
-
-void MainWindow::on_settingsRemoveFinishedDownloads_stateChanged(int state)
-{
-    if (state == Qt::Checked)
-    {
-        cg->settings.setValue("RemoveFinishedDownloads", true);
-    }
-    else
-    {
-        cg->settings.setValue("RemoveFinishedDownloads", false);
-    }
 }
 
-void MainWindow::on_downloadPause_clicked()
-{
-    if (ui.downloadTree->currentIndex().row() != -1)
-    {
-        int item = ui.downloadTree->topLevelItemCount() - ui.downloadTree->currentIndex().row() -1;
-        cg->pauseDownload(item);
-    }
+void MainWindow::on_settingsRemoveFinishedDownloads_stateChanged(int state) {
+    cg->settings.setValue("RemoveFinishedDownloads", state == Qt::Checked);
 }
 
-void MainWindow::settingsProxyChanged()
-{
+void MainWindow::settingsProxyChanged() {
     cg->settings.setValue("UseProxy", ui.settingsUseProxy->isChecked());
     cg->settings.setValue("ProxyHost", ui.settingsProxyHost->text());
     cg->settings.setValue("ProxyPort", ui.settingsProxyPort->value());
@@ -558,77 +541,49 @@ void MainWindow::settingsProxyChanged()
     cg->settings.setValue("ProxyType", ui.settingsProxyType->currentIndex());
     ui.settingsProxyGroup->setEnabled(ui.settingsUseProxy->isChecked());
     ui.settingsProxyAuthenticationRequired->setEnabled(ui.settingsUseProxy->isChecked());
-    if (ui.settingsUseProxy->isChecked())
-    {
-        if (ui.settingsProxyAuthenticationRequired->isChecked())
-        {
-            ui.settingsProxyAuthenticationGroup->setEnabled(ui.settingsProxyAuthenticationRequired->isChecked());
-        }
-    }
-    else
-    {
-        ui.settingsProxyAuthenticationGroup->setEnabled(false);
-        ui.settingsProxyAuthenticationRequired->setEnabled(false);
-     }
+
+    ui.settingsProxyAuthenticationGroup->setEnabled(ui.settingsUseProxy->isChecked() && ui.settingsProxyAuthenticationRequired->isChecked());
     cg->activateProxySettings();
 }
 
 void MainWindow::timerEvent(QTimerEvent *)
 {
-    QPair<qint64, qint64> downloadProgress = cg->downloadProgress();
-    if (downloadProgress.first != 0 && downloadProgress.second != 0)
-    {
-        #ifdef Q_WS_X11
-            systemTrayIcon.setToolTip("<strong style=\"font-size:14px\">" + tr("ClipGrab") + "</strong><br /><span style=\"font-size:13px\">" + QString::number(downloadProgress.first*100/downloadProgress.second) + " %</span><br />" + QString::number((double)downloadProgress.first/1024/1024, QLocale::system().decimalPoint().toAscii(), 1) + tr(" MiB") + "/" + QString::number((double)downloadProgress.second/1024/1024, QLocale::system().decimalPoint().toAscii(), 1) + tr(" MiB"));
-        #else
-        systemTrayIcon.setToolTip(tr("ClipGrab") + " - " + QString::number(downloadProgress.first*100/downloadProgress.second) + " % - " + QString::number((double)downloadProgress.first/1024/1024, QLocale::system().decimalPoint().toAscii(), 1) + tr(" MiB") + "/" + QString::number((double)downloadProgress.second/1024/1024, QLocale::system().decimalPoint().toAscii(), 1) + tr(" KiB"));
-        #endif
-        setWindowTitle("ClipGrab - " + QString::number(downloadProgress.first*100/downloadProgress.second) + " %");
-    }
-    else
-    {
-        #ifdef Q_WS_X11
-            systemTrayIcon.setToolTip("<strong style=\"font-size:14px\">" + tr("ClipGrab") + "</strong><br /><span style=\"font-size:13px\">" + tr("Currently no downloads in progress."));
-        #endif
-        systemTrayIcon.setToolTip(tr("ClipGrab") + tr("Currently no downloads in progress."));
-        setWindowTitle(tr("ClipGrab - Download and Convert Online Videos"));
-    }
+//    QPair<qint64, qint64> downloadProgress = cg->downloadProgress();
+//    if (downloadProgress.first != 0 && downloadProgress.second != 0)
+//    {
+//        #ifdef Q_WS_X11
+//            systemTrayIcon.setToolTip("<strong style=\"font-size:14px\">" + tr("ClipGrab") + "</strong><br /><span style=\"font-size:13px\">" + QString::number(downloadProgress.first*100/downloadProgress.second) + " %</span><br />" + QString::number((double)downloadProgress.first/1024/1024, QLocale::system().decimalPoint().toAscii(), 1) + tr(" MiB") + "/" + QString::number((double)downloadProgress.second/1024/1024, QLocale::system().decimalPoint().toAscii(), 1) + tr(" MiB"));
+//        #else
+//        systemTrayIcon.setToolTip(tr("ClipGrab") + " - " + QString::number(downloadProgress.first*100/downloadProgress.second) + " % - " + QString::number((double)downloadProgress.first/1024/1024, QLocale::system().decimalPoint().toLatin1(), 1) + tr(" MiB") + "/" + QString::number((double)downloadProgress.second/1024/1024, QLocale::system().decimalPoint().toLatin1(), 1) + tr(" KiB"));
+//        #endif
+//        setWindowTitle("ClipGrab - " + QString::number(downloadProgress.first*100/downloadProgress.second) + " %");
+//    }
+//    else
+//    {
+//        #ifdef Q_WS_X11
+//            systemTrayIcon.setToolTip("<strong style=\"font-size:14px\">" + tr("ClipGrab") + "</strong><br /><span style=\"font-size:13px\">" + tr("Currently no downloads in progress."));
+//        #endif
+//        systemTrayIcon.setToolTip(tr("ClipGrab") + tr("Currently no downloads in progress."));
+//        setWindowTitle(tr("ClipGrab - Download and Convert Online Videos"));
+//    }
 }
 
-void MainWindow::changeEvent(QEvent* event)
-{
-    if (event->type() == QEvent::WindowStateChange)
-    {
-        if (isMinimized() && cg->settings.value("MinimizeToTray", false).toBool())
-        {
+void MainWindow::changeEvent(QEvent* event) {
+    if (event->type() == QEvent::WindowStateChange) {
+        if (isMinimized() && cg->settings.value("MinimizeToTray", false).toBool()) {
             QTimer::singleShot(500, this, SLOT(hide()));
             event->ignore();
         }
     }
 }
 
-void MainWindow::on_settingsMinimizeToTray_stateChanged(int state)
-{
-    if (state == Qt::Checked)
-    {
-        cg->settings.setValue("MinimizeToTray", true);
-    }
-    else
-    {
-        cg->settings.setValue("MinimizeToTray", false);
-    }
+void MainWindow::on_settingsMinimizeToTray_stateChanged(int state) {
+    cg->settings.setValue("MinimizeToTray", state == Qt::Checked);
 }
 
 
-void MainWindow::on_downloadLineEdit_returnPressed()
-{
-    if (currentVideo)
-    {
-        if (!currentVideo->title().isEmpty())
-        {
-            this->startDownload();
-        }
-    }
+void MainWindow::on_downloadLineEdit_returnPressed() {
+    startDownload();
 }
 
 void MainWindow::on_label_linkActivated(QString link)
@@ -638,73 +593,80 @@ void MainWindow::on_label_linkActivated(QString link)
 
 void MainWindow::on_settingsUseMetadata_stateChanged(int state)
 {
-    if (state == Qt::Checked)
-    {
-        cg->settings.setValue("UseMetadata", true);
-    }
-    else
-    {
-        cg->settings.setValue("UseMetadata", false);
-    }
+    cg->settings.setValue("UseMetadata", state == Qt::Checked);
 }
 
 void MainWindow::on_searchLineEdit_textChanged(QString keywords)
 {
-    if (!keywords.isEmpty())
-    {
-    if (searchReply)
-    {
-        searchReply->abort();
-        searchReply->deleteLater();
+    if (keywords.startsWith("https://") || keywords.startsWith("http://")) {
+        ui.mainTab->setCurrentIndex(1);
+        ui.downloadLineEdit->setText(keywords);
+        return;
     }
-        this->searchReply = searchNam->get(QNetworkRequest(QUrl("http://gdata.youtube.com/feeds/mobile/videos?max-results=8&q=" + keywords.replace(QRegExp("[&\\?%\\s]"), "+"))));
-        connect(this->searchReply, SIGNAL(finished()), this, SLOT(processSearchReply()));
-    }
-    else
-    {
-        this->searchReply = searchNam->get(QNetworkRequest(QUrl("http://gdata.youtube.com/feeds/mobile/standardfeeds/most_popular?max-results=4")));
-        connect(this->searchReply, SIGNAL(finished()), this, SLOT(processSearchReply()));
-    }
+
+    bool isTimerActive = searchTimer.isActive();
+    searchTimer.stop();
+    searchTimer.setSingleShot(true);
+    searchTimer.start(1500);
+
+    if (isTimerActive) return;
+    this->ui.searchWebEngineView->page()->load(QUrl("qrc:///search/loading-progress.html"));
 }
 
-void MainWindow::processSearchReply()
+void MainWindow::updateSearch(QString keywords) {
+    if (this->ui.searchWebEngineView->page()->url().toString() != "qrc:///search/loading-progress.html") {
+        this->ui.searchWebEngineView->page()->load(QUrl("qrc:///search/loading-progress.html"));
+    }
+    cg->search(keywords);
+}
+
+void MainWindow::handleSearchResults(video* searchPlaylist)
 {
-    QDomDocument* dom = new QDomDocument();
-    dom->setContent(searchReply->readAll());
-    QDomNodeList entries = dom->elementsByTagName("entry");
+    QList<video*> videos = searchPlaylist->getPlaylistVideos();
 
     QString searchHtml;
-    searchHtml.append("<style>body {margin:0;padding:0;width:100%;left:0px;top:0px;font-family:'Segoe UI', Ubuntu, sans-serif} img{position:relative;top:-22px;left:-15px} .entry{display:block;position:relative;width:50%;float:left;height:100px;} a{color:#1a1a1a;text-decoration:none;} span.title{display:block;font-weight:bold;font-size:14px;position:absolute;left:140px;top:16px;} span.duration{display:block;font-size:11px;position:absolute;left:140px;top:70px;color:#aaa}  span.thumbnail{width:120px;height:68px;background:#00b2de;display:block;overflow:hidden;position:absolute;left:8px;top:16px;} a:hover{background: #00b2de;color:#fff}</style>");
+    #ifdef Q_OS_MAC
+        QString fontFamily = "Helvetica Neue";
+    #else
+        QFontDatabase fontDatabase;
+        QString font = fontDatabase.systemFont(QFontDatabase::GeneralFont).family();
+        QString fontFamily = "'" + font + "',  sans-serif";
+    #endif
+    searchHtml.append("<!doctype html>");
+    searchHtml.append("<html>");
+    searchHtml.append("<head>");
+    searchHtml.append("<style>body {font-family: " + fontFamily + "}</style>");
+    searchHtml.append("<link rel=\"stylesheet\" href=\"qrc:///search/search-styles.css\"></link>");
+    searchHtml.append("</head>");
     searchHtml.append("<body>");
 
-    for (int i = 0; i < entries.count(); i++)
-    {
-        QString duration;
-        int seconds = entries.at(i).toElement().elementsByTagName("yt:duration").at(0).toElement().attribute("seconds").toInt();
-
-        duration.append(QString("%1:").arg(QString::number(floor(seconds/3600)), 2, QChar('0')));
-        duration.append(QString("%1:").arg(QString::number(floor((seconds%3600)/60)), 2, QChar('0')));
-        duration.append(QString("%1").arg(QString::number(seconds%3600%60), 2, QChar('0')));
-
-        searchHtml.append("<a href=\"http://www.youtube.com/watch?v=" + entries.at(i).toElement().elementsByTagName("id").at(0).toElement().text().split("/").last() + "\" class=\"entry\">");
-        searchHtml.append("<span class=\"title\">" + entries.at(i).toElement().elementsByTagName("title").at(0).toElement().text() + "</span>");
-        searchHtml.append("<span class=\"duration\">" + duration + "</span>");
-        searchHtml.append("<span class=\"thumbnail\"><img width=\"125%\" src=\"" + entries.at(i).toElement().elementsByTagName("media:thumbnail").at(0).toElement().attribute("url") + "\"  /></span");
-
-
-
+    for (int i = 0; i < videos.length(); i++) {
+        QString link = videos.at(i)->getUrl();
+        QString title = videos.at(i)->getTitle();
+        QString thumbnail = videos.at(i)->getThumbnail();
+        QString duration = cg->humanizeSeconds(videos.at(i)->getDuration());
+        searchHtml.append("<a href=\"" + link + "\" class=\"entry\">");
+        searchHtml.append("<span class=\"title\">" + title + "</span>");
+        searchHtml.append("<span class=\"thumbnail\" style=\"background-image: url('" + thumbnail + "')\"</span>");
+        if (!duration.isEmpty()) {
+            searchHtml.append("<span class=\"duration\">" + duration + "</span>");
+        }
         searchHtml.append("</a>");
     }
 
     searchHtml.append("</body>");
-    this->ui.searchWebView->setHtml(searchHtml);
-    ui.searchWebView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-
+    searchHtml.append("</html>");
+    if (videos.length() == 0) {
+        QFile loadingFailedHTML(":/search/loading-failed.html");
+        loadingFailedHTML.open(QFile::ReadOnly);
+        searchHtml = QString(loadingFailedHTML.readAll()).replace("%NORESULTS%", tr("No results found."));
+    }
+    this->ui.searchWebEngineView->page()->setHtml(searchHtml);
 }
 
-void MainWindow::on_searchWebView_linkClicked(QUrl url)
+void MainWindow::handleSearchResultClicked(const QUrl & url)
 {
-    this->ui.downloadLineEdit->setText(url.toString());;
+    this->ui.downloadLineEdit->setText(url.toString());
     this->ui.mainTab->setCurrentIndex(1);
 }
 
@@ -718,26 +680,9 @@ void MainWindow::on_mainTab_currentChanged(int index)
     cg->settings.setValue("MainTab", index);
 }
 
-void MainWindow::on_downloadTree_doubleClicked(QModelIndex /*index*/)
-{
-    if (ui.downloadTree->currentIndex().row() != -1)
-    {
-        if (cg->isDownloadFinished(ui.downloadTree->topLevelItemCount()-1))
-        {
-            QString targetFile;
-            cg->downloadProgress();
-            targetFile = cg->getDownloadTargetPath(ui.downloadTree->topLevelItemCount()-1 - ui.downloadTree->currentIndex().row());
-            QUrl targetFileUrl = QUrl::fromLocalFile(targetFile);
-            qDebug() << targetFileUrl << targetFileUrl.isValid();
-            qDebug() << QDesktopServices::openUrl(targetFileUrl);
-        }
-    }
-}
-
 void MainWindow::on_settingsLanguage_currentIndexChanged(int index)
 {
     cg->settings.setValue("Language", cg->languages.at(index).code);
-
 }
 
 void MainWindow::on_buttonDonate_clicked()
@@ -748,4 +693,145 @@ void MainWindow::on_buttonDonate_clicked()
 void MainWindow::on_settingsUseWebM_toggled(bool checked)
 {
     cg->settings.setValue("UseWebM", checked);
+}
+
+void MainWindow::on_settingsIgnoreSSLErrors_toggled(bool checked)
+{
+    cg->settings.setValue("IgnoreSSLErrors", checked);
+}
+
+void MainWindow::on_downloadTree_customContextMenuRequested(const QPoint &point)
+{
+    QModelIndex i = ui.downloadTree->indexAt(point);
+    if (!i.isValid()) return;
+
+    video* selectedVideo = ((DownloadListModel*) ui.downloadTree->model())->getVideo(i);
+    if (selectedVideo == nullptr) return;
+
+    QMenu contextMenu;
+    QAction* openDownload = contextMenu.addAction(tr("&Open downloaded file"));
+    QAction* openFolder = contextMenu.addAction(tr("Open &target folder"));
+    contextMenu.addSeparator();
+    QAction* pauseDownload = contextMenu.addAction(tr("&Pause download"));
+    QAction* restartDownload = contextMenu.addAction(tr("&Restart download"));
+    QAction* cancelDownload = contextMenu.addAction(tr("&Cancel download"));
+    contextMenu.addSeparator();
+    QAction* copyLink = contextMenu.addAction(tr("Copy &video link"));
+    QAction* openLink = contextMenu.addAction(tr("Open video link in &browser"));
+
+    if (selectedVideo->getState() == video::state::paused) {
+        pauseDownload->setText(tr("Resume download"));
+    }
+
+    if (selectedVideo->getState() == video::state::canceled) {
+        contextMenu.removeAction(pauseDownload);
+        contextMenu.removeAction(cancelDownload);
+    }
+
+    if (selectedVideo->getState() == video::state::finished) {
+        contextMenu.removeAction(pauseDownload);
+        contextMenu.removeAction(restartDownload);
+        contextMenu.removeAction(cancelDownload);
+        #ifdef Q_OS_MAC
+            openFolder->setText(tr("Show in &Finder"));
+        #endif
+    } else {
+        contextMenu.removeAction(openDownload);
+    }
+
+
+    QAction* selectedAction = contextMenu.exec(ui.downloadTree->mapToGlobal(point));
+    if (selectedAction == restartDownload) {
+        selectedVideo->restart();
+    } else if (selectedAction == cancelDownload) {
+        selectedVideo->cancel();
+    } else if (selectedAction == pauseDownload) {
+        if (selectedVideo->getState() == video::state::paused) {
+            selectedVideo->resume();
+        } else {
+            selectedVideo->pause();
+        }
+    } else if (selectedAction == openFolder) {
+        cg->openTargetFolder(selectedVideo);
+    } else if (selectedAction == openDownload) {
+        cg->openDownload(selectedVideo);
+    } else if (selectedAction == openLink) {
+        QString link = selectedVideo->getUrl();
+        QDesktopServices::openUrl(QUrl(link));
+    } else if (selectedAction == copyLink) {
+        QApplication::clipboard()->setText(selectedVideo->getUrl());
+    }
+
+    contextMenu.deleteLater();
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasFormat("text/uri-list")) {
+        event->acceptProposedAction();
+    }
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    ui.downloadLineEdit->setText(event->mimeData()->text());
+    ui.mainTab->setCurrentIndex(1);
+}
+
+void MainWindow::updateYoutubeDlVersionInfo() {
+    QString youtubeDlVersion = YoutubeDl::getVersion();
+    QString pythonVersion = YoutubeDl::getPythonVersion();
+    QString youtubeDlPath = YoutubeDl::find();
+    QString pythonPath = YoutubeDl::findPython();
+    QString label = tr("youtube-dl: %1 (%2)\nPython: %3 (%4)")
+            .arg(youtubeDlPath)
+            .arg(youtubeDlVersion)
+            .arg(pythonPath)
+            .arg(pythonVersion);
+    ui.labelYoutubeDlVersionInfo->setText(label);
+};
+
+void MainWindow::on_settingsRememberLogins_toggled(bool /*checked*/)
+{
+//    cg->settings.setValue("rememberLogins", checked);
+//    cg->settings.setValue("youtubeRememberLogin", checked);
+//    cg->settings.setValue("facebookRememberLogin", checked);
+//    cg->settings.setValue("vimeoRememberLogin", checked);
+//    if (!checked)
+//    {
+//        cg->settings.remove("youtubeCookies");
+//        cg->settings.remove("facebookCookies");
+//        cg->settings.remove("vimeoCookies");
+//    }
+}
+
+void MainWindow::on_settingsRememberVideoQuality_toggled(bool checked)
+{
+    cg->settings.setValue("rememberVideoQuality", checked);
+}
+
+void MainWindow::on_downloadComboQuality_currentIndexChanged(int index)
+{
+    if (this->updatingComboQuality || !cg->settings.value("rememberVideoQuality", true).toBool() || cg->getCurrentVideo() == nullptr) {
+        return;
+    }
+
+    cg->settings.setValue("rememberedVideoQuality", ui.downloadComboQuality->itemData(index, Qt::UserRole).toInt());
+}
+
+void MainWindow::searchTimerTimeout()
+{
+    updateSearch(this->ui.searchLineEdit->text());
+}
+
+void MainWindow::on_downloadTree_doubleClicked(const QModelIndex &index)
+{
+    video* video = ((DownloadListModel*) ui.downloadTree->model())->getVideo(index);
+    if (video == nullptr) return;
+    cg->openDownload(video);
+}
+
+
+void MainWindow::on_settingsForceIpV4_toggled(bool checked) {
+    cg->settings.setValue("forceIpV4", checked);
 }

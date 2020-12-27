@@ -1,6 +1,6 @@
 /*
     ClipGrab³
-    Copyright (C) Philipp Schmieder
+    Copyright (C) The ClipGrab Project
     http://clipgrab.de
     feedback [at] clipgrab [dot] de
 
@@ -25,12 +25,5 @@
 
 void Notifications::showMessage(QString title, QString message, QSystemTrayIcon *systemTrayIcon)
 {
-    #ifdef Q_WS_MAC64
-        if (QSysInfo::MacintoshVersion != QSysInfo::MV_LION && QSysInfo::MacintoshVersion != QSysInfo::MV_SNOWLEOPARD)
-        {
-            NSUserNotifications::showMessage(title, message);
-            return;
-        }
-    #endif
     systemTrayIcon->showMessage(title, message);
 }

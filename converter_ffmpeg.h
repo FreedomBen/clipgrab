@@ -1,6 +1,6 @@
 /*
     ClipGrab³
-    Copyright (C) Philipp Schmieder
+    Copyright (C) The ClipGrab Project
     http://clipgrab.de
     feedback [at] clipgrab [dot] de
 
@@ -26,12 +26,14 @@
 
 #include "converter.h"
 #include <QSysInfo>
+#include <QApplication>
 
 class ffmpegThread : public QThread
 {
     public:
     QFile* inputFile;
     QString target;
+    QString container;
     QString metaTitle;
     QString metaArtist;
     QStringList acceptedAudioCodec;
@@ -41,6 +43,7 @@ class ffmpegThread : public QThread
 
     QList<QFile*> concatFiles;
     QFile* concatTarget;
+    QString originalFormat;
 
     void run();
 
@@ -54,9 +57,10 @@ public:
 
     converter* createNewInstance();
     void startConversion(QFile* file, QString& target, QString originalExtension, QString metaTitle, QString metaArtist, int mode);
-    void concatenate(QList<QFile*> files, QFile* target);
+    void concatenate(QList<QFile*> files, QFile* target, QString originalFormat);
     bool isAvailable();
     QString getExtensionForMode(int mode);
+    bool isAudioOnly(int mode);
     ffmpegThread ffmpeg;
 
 public slots:
