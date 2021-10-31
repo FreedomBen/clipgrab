@@ -15,13 +15,13 @@ CLIPGRAB_VER=3.9.7
 
 # Change directory to ~/Downloads and download latest AppImage
 cd ~/Downloads
-wget 'https://download.clipgrab.org/ClipGrab-${CLIPGRAB_VER}-x86_64.AppImage'
+wget "https://download.clipgrab.org/ClipGrab-${CLIPGRAB_VER}-x86_64.AppImage"
 
 # Make downloaded AppImage executable
-chmod +x ClipGrab-${CLIPGRAB_VER}-x86_64.AppImage
+chmod +x "ClipGrab-${CLIPGRAB_VER}-x86_64.AppImage"
 
 # Run it!
 ./ClipGrab-${CLIPGRAB_VER}-x86_64.AppImage
 ```
 
-If you find this software useful, please consider [a donation](https://clipgrab.org/donate)!
+If you find this software useful, please consider making [a donation](https://clipgrab.org/donate).
