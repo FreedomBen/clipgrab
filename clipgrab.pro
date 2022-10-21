@@ -5,7 +5,7 @@ TEMPLATE = app
 TARGET = clipgrab
 DEPENDPATH += . \
     release
-INCLUDEPATH += .
+INCLUDEPATH += . src
 QT += core \
     widgets
 QT += gui
@@ -13,72 +13,80 @@ QT += network
 QT += xml
 QT += webenginewidgets
 
+MOC_DIR = temp
+UI_DIR = temp
+OBJECTS_DIR = temp
+QM_FILES_INSTALL_PATH = i18n
+
 # Input
-HEADERS += converter.h \
-    converter_copy.h \
-    converter_ffmpeg.h \
-    download_list_model.h \
-    helper_downloader.h \
-    mainwindow.h \
-    video.h \
-    notifications.h \
-    message_dialog.h \
-    clipgrab.h \
-    web_engine_view.h \
-    youtube_dl.h
-FORMS += metadata-dialog.ui \
-    helper_downloader.ui \
-    mainwindow.ui \
-    update_message.ui \
-    message_dialog.ui
-SOURCES += converter.cpp \
-    converter_copy.cpp \
-    converter_ffmpeg.cpp \
-    download_list_model.cpp \
-    helper_downloader.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    video.cpp \
-    notifications.cpp \
-    message_dialog.cpp \
-    clipgrab.cpp \
-    web_engine_view.cpp \
-    youtube_dl.cpp
+HEADERS += \
+    src/converter.h \
+    src/converter_copy.h \
+    src/converter_ffmpeg.h \
+    src/download_list_model.h \
+    src/helper_downloader.h \
+    src/mainwindow.h \
+    src/video.h \
+    src/notifications.h \
+    src/message_dialog.h \
+    src/clipgrab.h \
+    src/web_engine_view.h \
+    src/youtube_dl.h
+FORMS += \
+    src/ui/metadata-dialog.ui \
+    src/ui/helper_downloader.ui \
+    src/ui/mainwindow.ui \
+    src/ui/update_message.ui \
+    src/ui/message_dialog.ui
+SOURCES += \
+    src/converter.cpp \
+    src/converter_copy.cpp \
+    src/converter_ffmpeg.cpp \
+    src/download_list_model.cpp \
+    src/helper_downloader.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/video.cpp \
+    src/notifications.cpp \
+    src/message_dialog.cpp \
+    src/clipgrab.cpp \
+    src/web_engine_view.cpp \
+    src/youtube_dl.cpp
 RESOURCES += resources.qrc
-TRANSLATIONS += clipgrab_bg.ts \
-                clipgrab_bn.ts \
-                clipgrab_ca.ts \
-                clipgrab_cs.ts \
-                clipgrab_de.ts \
-                clipgrab_el.ts \
-                clipgrab_es.ts \
-                clipgrab_eu.ts \
-                clipgrab_fa.ts \
-                clipgrab_fr.ts \
-                clipgrab_fi.ts \
-                clipgrab_hr.ts \
-                clipgrab_hu.ts \
-                clipgrab_id.ts \
-                clipgrab_it.ts \
-                clipgrab_ja.ts \
-                clipgrab_ko.ts \
-                clipgrab_mk.ts \
-                clipgrab_lt.ts \
-                clipgrab_nl.ts \
-                clipgrab_no.ts \
-                clipgrab_pa.ts \
-                clipgrab_pl.ts \
-                clipgrab_pt.ts \
-                clipgrab_ro.ts \
-                clipgrab_ru.ts \
-                clipgrab_si.ts \
-                clipgrab_sr.ts \
-                clipgrab_sv.ts \
-                clipgrab_sw.ts \
-                clipgrab_tr.ts \
-                clipgrab_vi.ts \
-                clipgrab_zh.ts \
-                clipgrab_strings.ts
+TRANSLATIONS += ts/clipgrab_bg.ts \
+                ts/clipgrab_bn.ts \
+                ts/clipgrab_ca.ts \
+                ts/clipgrab_cs.ts \
+                ts/clipgrab_de.ts \
+                ts/clipgrab_el.ts \
+                ts/clipgrab_es.ts \
+                ts/clipgrab_eu.ts \
+                ts/clipgrab_fa.ts \
+                ts/clipgrab_fr.ts \
+                ts/clipgrab_fi.ts \
+                ts/clipgrab_hr.ts \
+                ts/clipgrab_hu.ts \
+                ts/clipgrab_id.ts \
+                ts/clipgrab_it.ts \
+                ts/clipgrab_ja.ts \
+                ts/clipgrab_ko.ts \
+                ts/clipgrab_mk.ts \
+                ts/clipgrab_lt.ts \
+                ts/clipgrab_nl.ts \
+                ts/clipgrab_no.ts \
+                ts/clipgrab_pa.ts \
+                ts/clipgrab_pl.ts \
+                ts/clipgrab_pt.ts \
+                ts/clipgrab_ro.ts \
+                ts/clipgrab_ru.ts \
+                ts/clipgrab_si.ts \
+                ts/clipgrab_sr.ts \
+                ts/clipgrab_sv.ts \
+                ts/clipgrab_sw.ts \
+                ts/clipgrab_tr.ts \
+                ts/clipgrab_vi.ts \
+                ts/clipgrab_zh.ts \
+                ts/clipgrab_strings.ts
 CODECFORTR = UTF-8
 win32:RC_FILE = windows_icon.rc
 macx { 
