@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     {
         locale = QLocale::system().name();
     }
-    translator.load(QString(":/lng/clipgrab_") + locale);
+    translator.load(QString(":/lang/clipgrab_") + locale);
     app.installTranslator(&translator);
     for (int i=0; i < cg->languages.length(); i++)
     {

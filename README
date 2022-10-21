@@ -10,6 +10,12 @@ You need to install the Qt5 developer libraries in order to compile the program.
 On Ubuntu and Debian-based system, you can install the necessary libraries like this:
 sudo apt install qtbase5-dev qtwebengine5-dev
 
+Translation additionally requires:
+sudo apt-get install qttools5-dev-tools
+
+It's needed for linguist, lupdate and lrelease.
+
+
 Other Linux distributions might have slightly different package names. Packages for Windows and macOS can be downloaded here: https://download.qt.io/archive/qt/5.12/
 
 In addition, ffmpeg (no developer libs necessary) needs to be installed.

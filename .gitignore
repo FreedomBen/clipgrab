@@ -5,6 +5,7 @@ clipgrab
 Makefile
 
 # moc, ui, and other objects
+temp
 .moc
 .ui
 .objects
