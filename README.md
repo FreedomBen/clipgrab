@@ -3,6 +3,8 @@ clipgrab
 
 Slightly customized version of ClipGrab (http://clipgrab.org/)
 
+ClipGrab is a GUI frontend for [youtube-dl](https://youtube-dl.org).
+
 See [README](https://github.com/FreedomBen/clipgrab/blob/master/README) for build instructions if you are building yourself.
 
 Unless you want to hack on the code, I would recommend [downloading a pre-built AppImage file](https://clipgrab.org/).
