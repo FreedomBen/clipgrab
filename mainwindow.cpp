@@ -241,6 +241,29 @@ void MainWindow::init()
     connect(tabShortcutAbout, SIGNAL(activated()), tabShortcutMapper, SLOT(map()));
     connect(tabShortcutMapper, SIGNAL(mapped(int)), this->ui.mainTab, SLOT(setCurrentIndex(int)));
 
+    findShortcutA = new QShortcut(QKeySequence("S"), this);
+    findShortcutB = new QShortcut(QKeySequence("Ctrl+S"), this);
+    connect(findShortcutA, &QShortcut::activated, this, &MainWindow::activate_find);
+    connect(findShortcutB, &QShortcut::activated, this, &MainWindow::activate_find);
+
+    pasteShortcut = new QShortcut(QKeySequence::Paste, this);
+    connect(pasteShortcut, SIGNAL(activated()), this, SLOT(copyFromClipBoard()));
+
+    grabShortcutA = new QShortcut(QKeySequence("G"), this);
+    grabShortcutB = new QShortcut(QKeySequence("Ctrl+G"), this);
+    connect(grabShortcutA, &QShortcut::activated, this, &MainWindow::activate_grab);
+    connect(grabShortcutB, &QShortcut::activated, this, &MainWindow::activate_grab);
+
+    formatShortcutA = new QShortcut(QKeySequence("F"), this);
+    formatShortcutB = new QShortcut(QKeySequence("Ctrl+F"), this);
+    connect(formatShortcutA, &QShortcut::activated, this, &MainWindow::activate_format_cb);
+    connect(formatShortcutB, &QShortcut::activated, this, &MainWindow::activate_format_cb);
+
+    qualityShortcutA = new QShortcut(QKeySequence("Q"), this);
+    qualityShortcutB = new QShortcut(QKeySequence("Ctrl+Q"), this);
+    connect(qualityShortcutA, &QShortcut::activated, this, &MainWindow::activate_quality_cb);
+    connect(qualityShortcutB, &QShortcut::activated, this, &MainWindow::activate_quality_cb);
+
     //*
     //*Miscellaneous
     //*
@@ -419,6 +442,44 @@ void MainWindow::compatibleUrlFoundInClipBoard(QString url) {
             this->raise();
         }
     }
+}
+
+void MainWindow::copyFromClipBoard() {
+    QString url = QApplication::clipboard()->text();
+    ui.mainTab->setCurrentIndex(1);
+    if (!url.isEmpty()) {
+        this->ui.downloadLineEdit->setText(url);
+    }
+}
+
+void MainWindow::activate_grab()
+{
+    ui.mainTab->setCurrentIndex(1);
+    if ( ui.downloadLineEdit->text().isEmpty() && !QApplication::clipboard()->text().isEmpty() )
+        ui.downloadLineEdit->setText( QApplication::clipboard()->text() );
+    else
+        ui.downloadStart->click();
+}
+
+void MainWindow::activate_find()
+{
+    ui.mainTab->setCurrentIndex(0);
+    if ( ui.searchLineEdit->text().isEmpty() && !QApplication::clipboard()->text().isEmpty() )
+        ui.searchLineEdit->setText( QApplication::clipboard()->text() );
+}
+
+void MainWindow::activate_format_cb()
+{
+    ui.mainTab->setCurrentIndex(1);
+    if (ui.downloadComboFormat->isEnabled())
+        ui.downloadComboFormat->showPopup();
+}
+
+void MainWindow::activate_quality_cb()
+{
+    ui.mainTab->setCurrentIndex(1);
+    if (ui.downloadComboQuality->isEnabled())
+        ui.downloadComboQuality->showPopup();
 }
 
 void MainWindow::systemTrayMessageClicked() {

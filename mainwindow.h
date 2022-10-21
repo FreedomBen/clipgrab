@@ -25,6 +25,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QShortcut>
 #include <QSignalMapper>
 #include <QtXml>
 #include <QUrl>
@@ -121,6 +122,11 @@ public:
 
 public slots:
     void startDownload();
+    void activate_find();
+    void copyFromClipBoard();
+    void activate_grab();
+    void activate_format_cb();
+    void activate_quality_cb();
     void compatibleUrlFoundInClipBoard(QString url);
     void targetFileSelected(video* video, QString target);
     void searchTimerTimeout();
@@ -132,6 +138,15 @@ private:
      Ui::MetadataDialog mdui;
      QDialog* metadataDialog;
      QSystemTrayIcon systemTrayIcon;
+     QShortcut * findShortcutA;
+     QShortcut * findShortcutB;
+     QShortcut * grabShortcutA;
+     QShortcut * grabShortcutB;
+     QShortcut * pasteShortcut;
+     QShortcut * formatShortcutA;
+     QShortcut * formatShortcutB;
+     QShortcut * qualityShortcutA;
+     QShortcut * qualityShortcutB;
      void disableDownloadUi(bool disable=true);
      void disableDownloadTreeButtons(bool disable=true);
      void closeEvent(QCloseEvent* event);
