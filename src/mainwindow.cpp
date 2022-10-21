@@ -206,6 +206,12 @@ void MainWindow::init()
     //* About Tab
     //*
 
+    this->ui.labelThanks->setText(QApplication::translate(
+        "MainWindowClass",
+        "<h2>Thanks</h2>\n"
+        "ClipGrab relies on the work of the Qt project, the ffmpeg team, and the youtube-dl team.<br>\n"
+        "Visit <a href=\"https://www.qt.io\">qt.io</a>, <a href=\"https://ffmpeg.org\">ffmpeg.org</a>, and <a href=\"%1\">%2</a> for further information.",
+        nullptr).arg(YoutubeDl::homepage_url, YoutubeDl::homepage_short));
     #ifdef Q_OS_MAC
         this->ui.downloadOpen->hide();
         this->cg->settings.setValue("Clipboard", "always");

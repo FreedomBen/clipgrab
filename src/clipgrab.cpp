@@ -560,7 +560,7 @@ void ClipGrab::downloadYoutubeDl(bool force) {
     if (force == false && youtubeDlInstalled) {
         QString installedVersion = YoutubeDl::getVersion();
 
-        qDebug() << "Found youtube-dl " << installedVersion;
+        qDebug() << "Found " << YoutubeDl::executable << " " << installedVersion;
         if (installedVersion >= minVersion) return;
     }
     if (QSettings().value("disableYoutubeDlDownload", false).toBool()) return;
@@ -586,14 +586,14 @@ void ClipGrab::startYoutubeDlDownload() {
         QDir().mkpath(dir);
     }
 
-    this->youtubeDlFile = new  QFile(dir + "/youtube-dl");
+    this->youtubeDlFile = new  QFile(dir + "/" + YoutubeDl::executable);
     youtubeDlFile->open(QFile::WriteOnly);
     if (!youtubeDlFile->isOpen()) {
         errorHandler(tr("Unable to write to %1").arg(youtubeDlFile->fileName()));
         QApplication::quit();
     }
 
-    QString youtubeDlUrl = settings.value("youtubeDlUrl", "https://yt-dl.org/downloads/latest/youtube-dl").toString();
+    QString youtubeDlUrl = settings.value("youtubeDlUrl", YoutubeDl::download_url).toString();
     QNetworkRequest request;
     request.setUrl(QUrl(youtubeDlUrl));
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);

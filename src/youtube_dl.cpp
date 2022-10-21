@@ -1,5 +1,33 @@
 #include "youtube_dl.h"
 
+#if USE_YTDLP
+// A youtube-dl fork with additional features and fixes
+// see https://github.com/yt-dlp/yt-dlp
+const char * YoutubeDl::executable = "yt-dlp";
+const char * YoutubeDl::homepage_url = "https://github.com/yt-dlp/yt-dlp";
+const char * YoutubeDl::homepage_short = "github.com/yt-dlp/yt-dlp";
+
+#if defined(Q_OS_LINUX)
+const char * YoutubeDl::download_url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp";
+#elif defined(Q_OS_WIN)
+const char * YoutubeDl::download_url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
+#elif defined(Q_OS_MAC)
+const char * YoutubeDl::download_url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos";
+#else
+const char * YoutubeDl::download_url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp";
+#endif
+
+#else
+// (probably) the origin of youtube-dl
+// see https://yt-dl.org
+const char * YoutubeDl::executable = "youtube-dl";
+const char * YoutubeDl::download_url = "https://yt-dl.org/downloads/latest/youtube-dl";
+const char * YoutubeDl::homepage_url = "https://youtube-dl.org";
+const char * YoutubeDl::homepage_short = "youtube-dl.org";
+
+#endif
+
+
 YoutubeDl::YoutubeDl()
 {
 
@@ -11,7 +39,7 @@ QString YoutubeDl::find(bool force) {
     if (!force && !path.isEmpty()) return path;
 
     // Prefer downloaded youtube-dl
-    QString localPath = QStandardPaths::locate(QStandardPaths::AppDataLocation, "youtube-dl");
+    QString localPath = QStandardPaths::locate(QStandardPaths::AppDataLocation, YoutubeDl::executable);
     if (!localPath.isEmpty()) {
         QProcess* process = instance(localPath, QStringList() << "--version");
         process->start();
@@ -20,13 +48,13 @@ QString YoutubeDl::find(bool force) {
         if (process->state() != QProcess::NotRunning) process->kill();
         if (process->exitCode() == QProcess::ExitStatus::NormalExit) {
             path = localPath;
-            qDebug() << "Found youtube-dl in AppDataLocation at " << path;
+            qDebug() << "Found " << YoutubeDl::executable << " in AppDataLocation at " << path;
             return path;
         }
     }
 
     // Try system-wide youtube-dl installation
-    QString globalPath = QStandardPaths::findExecutable("youtube-dl");
+    QString globalPath = QStandardPaths::findExecutable(YoutubeDl::executable);
     if (!globalPath.isEmpty()) {
         QProcess* process = instance(globalPath, QStringList() << "--version");
         process->start();
@@ -35,12 +63,12 @@ QString YoutubeDl::find(bool force) {
         if (process->state() != QProcess::NotRunning) process->kill();
         if (process->exitCode() == QProcess::ExitStatus::NormalExit) {
             path = globalPath;
-            qDebug() << "Found youtube-dl executable at " << path;
+            qDebug() << "Found " << YoutubeDl::executable << " executable at " << path;
             return path;
         }
     }
 
-    qDebug() << "Error: could not find youtube-dl";
+    qDebug() << "Error: could not find " << YoutubeDl::executable;
     return "";
 }
 

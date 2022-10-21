@@ -13,6 +13,8 @@ QT += network
 QT += xml
 QT += webenginewidgets
 
+DEFINES += "USE_YTDLP=1"
+
 MOC_DIR = temp
 UI_DIR = temp
 OBJECTS_DIR = temp

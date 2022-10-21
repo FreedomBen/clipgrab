@@ -9,6 +9,11 @@ class YoutubeDl
 public:
     YoutubeDl();
 
+    static const char * executable;
+    static const char * download_url;
+    static const char * homepage_url;
+    static const char * homepage_short;
+
     static QProcess* instance(QStringList arguments);
     static QProcess* instance(QString path, QStringList arguments);
     static QString getVersion();
