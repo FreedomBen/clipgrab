@@ -1,5 +1,5 @@
-clipgrab
-========
+
+# ClipGrab
 
 Slightly customized version of ClipGrab (http://clipgrab.org/)
 
@@ -27,3 +27,13 @@ chmod +x "ClipGrab-${CLIPGRAB_VER}-x86_64.AppImage"
 ```
 
 If you find this software useful, please consider making [a donation](https://clipgrab.org/donate).
+
+
+## YouTube Downloader
+
+ClipGrab does utilize the YouTube Downloader.
+As described in  https://github.com/yt-dlp/yt-dlp/wiki/Forks on 2022-09-19, there are 3 active forks:
+
+* [youtube-dl](https://github.com/ytdl-org/youtube-dl) - The original
+* [yt-dlp](https://github.com/yt-dlp/yt-dlp) - This one is currently used in ClipGrab
+* [ytdl-patched](https://github.com/ytdl-patched/ytdl-patched) - A fork of yt-dlp
