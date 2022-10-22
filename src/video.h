@@ -46,7 +46,7 @@ struct videoQuality
     videoQuality(QString name) : name(name) {};
     videoQuality(QString name, QString videoFormat) : name(name), videoFormat(videoFormat) {};
 
-    bool operator<(videoQuality _other) const
+    bool operator<(videoQuality /*_other*/) const
     {
         return false;
         // TODO! Implement comparison!

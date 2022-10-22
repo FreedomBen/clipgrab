@@ -14,7 +14,7 @@
    <string>ClipGrab - Download and Convert Online Videos</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset resource="../../resources.qrc">
     <normaloff>:/img/icon.png</normaloff>:/img/icon.png</iconset>
   </property>
   <property name="styleSheet">
@@ -114,7 +114,7 @@ padding: 10px;
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap resource="resources.qrc">:/img/logo.png</pixmap>
+       <pixmap resource="../../resources.qrc">:/img/logo.png</pixmap>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -768,19 +768,6 @@ padding: 10px;
                   </property>
                  </widget>
                 </item>
-                <item row="10" column="1">
-                 <spacer name="verticalSpacer">
-                  <property name="orientation">
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>20</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
                 <item row="5" column="0" colspan="2">
                  <widget class="QCheckBox" name="settingsRemoveFinishedDownloads">
                   <property name="text">
@@ -822,6 +809,40 @@ padding: 10px;
                    <string>Force IPv4</string>
                   </property>
                  </widget>
+                </item>
+                <item row="10" column="0">
+                 <widget class="QCheckBox" name="settingsUpdateCheck">
+                  <property name="text">
+                   <string>Check clipgrab.org for updates at startup</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="11" column="0">
+                 <widget class="QCheckBox" name="settingsShowLogo">
+                  <property name="text">
+                   <string>Show ClipGrab Logo</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="12" column="0">
+                 <widget class="QCheckBox" name="settingsKeepURL">
+                  <property name="text">
+                   <string>Keep Download URL</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="13" column="1">
+                 <spacer name="verticalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
               </widget>
@@ -1180,7 +1201,7 @@ Visit &lt;a href=&quot;https://www.qt.io&quot;&gt;qt.io&lt;/a&gt;, &lt;a href=&q
            <enum>Qt::NoFocus</enum>
           </property>
           <property name="icon">
-           <iconset resource="resources.qrc">
+           <iconset resource="../../resources.qrc">
             <normaloff>:/img/paypal-logo.png</normaloff>:/img/paypal-logo.png</iconset>
           </property>
           <property name="iconSize">
@@ -1302,7 +1323,7 @@ ClipGrab is already available in many languages. If ClipGrab has not been transl
   <tabstop>checkBox_2</tabstop>
  </tabstops>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../../resources.qrc"/>
  </resources>
  <connections/>
 </ui>

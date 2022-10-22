@@ -40,9 +40,10 @@ void MainWindow::init()
 {
     DownloadListModel* l = new DownloadListModel(cg, this);
     this->ui.downloadTree->setModel(l);
-    connect(ui.downloadTree, &QTreeView::dataChanged,[=] {
-        handle_downloadTree_currentChanged(ui.downloadTree->currentIndex(), QModelIndex());
-    });
+    // QTreeView::dataChanged() is no signal!
+    //connect(ui.downloadTree, &QTreeView::dataChanged,[=] {
+    //    handle_downloadTree_currentChanged(ui.downloadTree->currentIndex(), QModelIndex());
+    //});
     connect(cg, &ClipGrab::downloadFinished, this, &MainWindow::handleFinishedConversion);
 
     //*
@@ -183,6 +184,9 @@ void MainWindow::init()
       ui.settingsIgnoreSSLErrors->hide();
 //    ui.settingsIgnoreSSLErrors->setChecked(cg->settings.value(("IgnoreSSLErrors"), false).toBool());
       ui.settingsForceIpV4->setChecked(cg->settings.value("forceIpV4", false).toBool());
+      ui.settingsUpdateCheck->setChecked(cg->settings.value("Check-Updates", true).toBool());
+      ui.settingsShowLogo->setChecked(cg->settings.value("Show-Logo", true).toBool());
+      ui.settingsKeepURL->setChecked(cg->settings.value("Keep-URL", false).toBool());
 
 
     int langIndex = 0;
@@ -287,6 +291,12 @@ void MainWindow::init()
         QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
     //}
     #endif
+
+    bool show_logo = cg->settings.value("Show-Logo", true).toBool();
+    if (!show_logo) {
+        ui.label_4->hide();
+        ui.verticalSpacer_9->changeSize(10, 0);
+    }
 }
 
 void MainWindow::startDownload() {
@@ -342,8 +352,12 @@ void MainWindow::targetFileSelected(video* video, QString target)
     video->setConverter(cg->formats.at(ui.downloadComboFormat->currentIndex())._converter, cg->formats.at(ui.downloadComboFormat->currentIndex())._mode);
     video->setTargetFilename(target);
     cg->enqueueDownload(video);
-    ui.downloadLineEdit->clear();
-    cg->clearCurrentVideo();
+
+    bool keep_url = cg->settings.value("Keep-URL", false).toBool();
+    if (!keep_url) {
+        ui.downloadLineEdit->clear();
+        cg->clearCurrentVideo();
+    }
 }
 
 void MainWindow::handleCurrentVideoStateChanged(video* video) {
@@ -902,3 +916,24 @@ void MainWindow::on_downloadTree_doubleClicked(const QModelIndex &index)
 void MainWindow::on_settingsForceIpV4_toggled(bool checked) {
     cg->settings.setValue("forceIpV4", checked);
 }
+
+void MainWindow::on_settingsUpdateCheck_toggled(bool checked) {
+    cg->settings.setValue("Check-Updates", checked);
+}
+
+void MainWindow::on_settingsShowLogo_toggled(bool checked) {
+    cg->settings.setValue("Show-Logo", checked);
+    if (checked) {
+        ui.label_4->show();
+        ui.verticalSpacer_9->changeSize(10, 10);
+    }
+    else {
+        ui.label_4->hide();
+        ui.verticalSpacer_9->changeSize(10, 0);
+    }
+}
+
+void MainWindow::on_settingsKeepURL_toggled(bool checked) {
+    cg->settings.setValue("Keep-URL", checked);
+}
+

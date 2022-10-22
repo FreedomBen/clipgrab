@@ -199,6 +199,9 @@ private slots:
     void on_downloadComboQuality_currentIndexChanged(int index);
     void on_downloadTree_doubleClicked(const QModelIndex &index);
     void on_settingsForceIpV4_toggled(bool checked);
+    void on_settingsUpdateCheck_toggled(bool checked);
+    void on_settingsShowLogo_toggled(bool checked);
+    void on_settingsKeepURL_toggled(bool checked);
 };
 
 #endif // MAINWINDOW_H

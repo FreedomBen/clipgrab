@@ -47,7 +47,11 @@ int main(int argc, char *argv[])
     parser.addVersionOption();
     parser.addHelpOption();
     QCommandLineOption startMinimizedOption(QStringList() << "start-minimized", "Hide the ClipGrab window on launch");
+    QCommandLineOption suppress_update_option(QStringList() << "no-update", "Suppress update checking");
+    QCommandLineOption perform_update_option(QStringList() << "update", "Check for updates");
     parser.addOption(startMinimizedOption);
+    parser.addOption(perform_update_option);
+    parser.addOption(suppress_update_option);
     parser.process(app);
 
     QSettings settings;
@@ -91,14 +95,20 @@ int main(int argc, char *argv[])
         w.show();
     }
 
-    QTimer::singleShot(0, [=] {
-       cg->getUpdateInfo();
-       QObject::connect(cg, &ClipGrab::updateInfoProcessed, [cg] {
-           bool force = QSettings().value("forceYoutubeDlDownload", false).toBool();
-           if (force) QSettings().setValue("forceYoutubeDlDownload", false);
-           cg->downloadYoutubeDl(force);
-       });
-    });
+    bool check_update = settings.value("Check-Updates", true).toBool();
+    if ( (check_update || parser.isSet(perform_update_option) ) && !parser.isSet(suppress_update_option) ) {
+        QTimer::singleShot(0, [=] {
+           cg->getUpdateInfo();
+           QObject::connect(cg, &ClipGrab::updateInfoProcessed, [cg] {
+               bool force = QSettings().value("forceYoutubeDlDownload", false).toBool();
+               if (force) QSettings().setValue("forceYoutubeDlDownload", false);
+               cg->downloadYoutubeDl(force);
+           });
+        });
+    }
+    else {
+        qDebug() << "not checking for updates. start clipgrab with command-line option '--update' or '--enable-updates', if desired";
+    }
 
     return app.exec();
 }

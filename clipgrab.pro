@@ -5,9 +5,9 @@ TEMPLATE = app
 TARGET = clipgrab
 DEPENDPATH += . \
     release
-INCLUDEPATH += . src
-QT += core \
-    widgets
+INCLUDEPATH += src
+QT += core
+QT += widgets
 QT += gui
 QT += network
 QT += xml

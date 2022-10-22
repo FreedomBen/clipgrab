@@ -292,6 +292,7 @@ void ClipGrab::getUpdateInfo()
     QNetworkRequest updateInfoRequest;
     updateInfoRequest.setUrl(updateInfoRequestUrl);
     QNetworkAccessManager* updateInfoNAM = new QNetworkAccessManager;
+    qDebug() << "requesting update info from " << updateInfoRequestUrl.toString();
     updateInfoNAM->get(updateInfoRequest);
     connect(updateInfoNAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(parseUpdateInfo(QNetworkReply*)));
 }
@@ -342,6 +343,7 @@ void ClipGrab::parseUpdateInfo(QNetworkReply* reply)
 
         if (!this->availableUpdates.isEmpty())
         {
+            qDebug() << "processing updates ..";
             qSort(this->availableUpdates.begin(), this->availableUpdates.end());
 
             //Create changelog document
@@ -407,6 +409,7 @@ void ClipGrab::parseUpdateInfo(QNetworkReply* reply)
     QDomNodeList commands = updateInfoXml.elementsByTagName("command");
     if (!commands.isEmpty())
     {
+        qDebug() << "processing update commands ..";
         for (int i = 0; i < commands.length(); i++)
         {
             QDomElement command = commands.at(i).toElement();
