@@ -12,28 +12,35 @@ QString YoutubeDl::find(bool force) {
 
     // Prefer downloaded youtube-dl
     QString localPath = QStandardPaths::locate(QStandardPaths::AppDataLocation, "youtube-dl");
-    QProcess* process = instance(localPath, QStringList() << "--version");
-    process->start();
-    process->waitForFinished();
-    process->deleteLater();
-    if (process->state() != QProcess::NotRunning) process->kill();
-    if (process->exitCode() == QProcess::ExitStatus::NormalExit) {
-        path = localPath;
-        return path;
+    if (!localPath.isEmpty()) {
+        QProcess* process = instance(localPath, QStringList() << "--version");
+        process->start();
+        process->waitForFinished();
+        process->deleteLater();
+        if (process->state() != QProcess::NotRunning) process->kill();
+        if (process->exitCode() == QProcess::ExitStatus::NormalExit) {
+            path = localPath;
+            qDebug() << "Found youtube-dl in AppDataLocation at " << path;
+            return path;
+        }
     }
 
     // Try system-wide youtube-dl installation
     QString globalPath = QStandardPaths::findExecutable("youtube-dl");
-    process = instance(globalPath, QStringList() << "--version");
-    process->start();
-    process->waitForFinished();
-    process->deleteLater();
-    if (process->state() != QProcess::NotRunning) process->kill();
-    if (process->exitCode() == QProcess::ExitStatus::NormalExit) {
-        path = globalPath;
-        return path;
+    if (!globalPath.isEmpty()) {
+        QProcess* process = instance(globalPath, QStringList() << "--version");
+        process->start();
+        process->waitForFinished();
+        process->deleteLater();
+        if (process->state() != QProcess::NotRunning) process->kill();
+        if (process->exitCode() == QProcess::ExitStatus::NormalExit) {
+            path = globalPath;
+            qDebug() << "Found youtube-dl executable at " << path;
+            return path;
+        }
     }
 
+    qDebug() << "Error: could not find youtube-dl";
     return "";
 }
 
