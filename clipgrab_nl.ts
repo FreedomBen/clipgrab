@@ -21,28 +21,29 @@
     <message>
         <location filename="clipgrab.cpp" line="535"/>
         <source>The fingerprint of the downloaded update file could not be verified: %1 should have been %2</source>
-        <translation>De fingerprint van het gedownloade updatebestand kon niet worden geverifieerd: %1 had %2 moeten zijn</translation>
+        <translation>De vingerafdruk van het gedownloade updatebestand kon niet worden geverifieerd: %1 had %2 moeten zijn</translation>
     </message>
     <message>
         <location filename="clipgrab.cpp" line="547"/>
         <source>Could not open update file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan updatebestand niet openen.</translation>
     </message>
     <message>
         <location filename="clipgrab.cpp" line="585"/>
         <source>Unable to write to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan niet schrijven naar %1</translation>
     </message>
     <message>
         <location filename="clipgrab.cpp" line="607"/>
         <source>SSL error: %1 
 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>SSL fout: %1 
+%2</translation>
     </message>
     <message>
         <location filename="clipgrab.cpp" line="614"/>
         <source>Error downloading youtube-dl: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Fout bij het downloaden van youtube-dl: %1</translation>
     </message>
     <message>
         <location filename="clipgrab.cpp" line="805"/>
@@ -75,12 +76,12 @@
     <message>
         <location filename="download_list_model.cpp" line="99"/>
         <source>Starting ...</source>
-        <translation>Aan het starten ...</translation>
+        <translation>Aan het starten...</translation>
     </message>
     <message>
         <location filename="download_list_model.cpp" line="106"/>
         <source>Converting ...</source>
-        <translation>Aan het converteren:...</translation>
+        <translation>Aan het converteren...</translation>
     </message>
     <message>
         <location filename="download_list_model.cpp" line="108"/>
@@ -154,7 +155,7 @@
         <location filename="helper_downloader.ui" line="85"/>
         <source>&lt;p&gt;ClipGrab uses youtube-dl in order to download videos from the Internet. youtube-dl is developed by an independent team of Open Source developers and released into the public domain.&lt;br&gt;Learn more on &lt;a href=&quot;https://youtube-dl.org&quot;&gt;youtube-dl.org&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Click on &lt;em&gt;Continue&lt;/em&gt; to download youtube-dl.&lt;/p&gt;</source>
         <oldsource>&lt;p&gt;ClipGrab uses youtube-dl in order to download videos from the Internet. youtube-dl is developed by an independent team of Open Source developers and released into the public domain.&lt;br&gt;Learn more on &lt;a href=&quot;https://youtube-dl.org&quot;&gt;youtube-dl.org&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Click on &lt;em&gt;Continue&lt;/em&gt; to automatically download youtube-dl.&lt;/p&gt;</oldsource>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;ClipGrab gebruikt youtube-dl om video's van het internet te downloaden. youtube-dl is ontwikkeld door een onafhankelijk team van open-source ontwikkelaars en vrijgegeven in het publieke domein. &lt;br&gt;Meer informatie op &lt;a href=&quot;https://youtube-dl.org&quot;&gt;youtube-dl.org&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Klik op &lt;em&gt;Doorgaan&lt;/em&gt; om youtube-dl te downloaden.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="helper_downloader.ui" line="99"/>
@@ -182,7 +183,7 @@
     <message>
         <location filename="mainwindow.cpp" line="333"/>
         <source>No downloadable video could be found.&lt;br /&gt;Maybe you have entered the wrong link or there is a problem with your connection.</source>
-        <translation>Deze link bevat geen video content.&lt;br /&gt;Misschien heeft u de verkeerde link geplakt of er is een probleem met uw internet verbinding.</translation>
+        <translation>Deze link bevat geen downloadbare video.&lt;br /&gt;Misschien heeft u de verkeerde link geplakt of er is een probleem met uw internet verbinding.</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="376"/>
@@ -207,27 +208,27 @@
     <message>
         <location filename="mainwindow.cpp" line="499"/>
         <source>There is still at least one download in progress.&lt;br /&gt;If you exit the program now, all downloads will be canceled and cannot be recovered later.&lt;br /&gt;Do you really want to quit ClipGrab now?</source>
-        <translation>Er is teminste nog een download bezig.&lt;br /&gt;Als u ClipGrab nu beëindigd, worden alle downloads verwijderd en kunnen niet worden hersteld.&lt;br /&gt;Wilt u nog steeds ClipGrab beëindigen?</translation>
+        <translation>Er is minstens nog één download bezig.&lt;br /&gt;Als u ClipGrab nu beëindigd, worden alle downloads verwijderd en kunnen niet worden hersteld.&lt;br /&gt;Wilt u nog steeds ClipGrab beëindigen?</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="527"/>
         <source>Download finished</source>
-        <translation type="unfinished"></translation>
+        <translation>Download voltooid</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="527"/>
         <source>Downloading and converting “%title” is now finished.</source>
-        <translation type="unfinished"></translation>
+        <translation>Het downloaden en converteren van "%title" is nu voltooid.</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="529"/>
         <source>All downloads finished</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle downloads voltooid</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="529"/>
         <source>ClipGrab has finished downloading and converting all selected videos.</source>
-        <translation type="unfinished"></translation>
+        <translation>ClipGrab is klaar met het downloaden en converteren van alle geselecteerde video's.</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="683"/>
@@ -237,12 +238,12 @@
     <message>
         <location filename="mainwindow.cpp" line="740"/>
         <source>&amp;Open downloaded file</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Gedownload bestand openen</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="741"/>
         <source>Open &amp;target folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Open &amp;doelmap</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="743"/>
@@ -257,7 +258,7 @@
     <message>
         <location filename="mainwindow.cpp" line="745"/>
         <source>&amp;Cancel download</source>
-        <translation>&amp;Downloaden annuleren</translation>
+        <translation>&amp;Download annuleren</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="747"/>
@@ -295,7 +296,7 @@
     <message>
         <location filename="mainwindow.ui" line="172"/>
         <source>Enter keywords in the box below in order to search videos on YouTube</source>
-        <translation>Voer een zoekwoord in het vak hieronder om te zoeken naar video's op YouTube</translation>
+        <translation>Voer een zoekwoord in het onderstaande vak om te zoeken naar video's op YouTube</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="190"/>
@@ -375,7 +376,7 @@
     <message>
         <location filename="mainwindow.ui" line="460"/>
         <source>Browse ...</source>
-        <translation>Zoeken ...</translation>
+        <translation>Bladeren ...</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="467"/>
@@ -405,7 +406,7 @@
     <message>
         <location filename="mainwindow.ui" line="528"/>
         <source>Here you can configure how ClipGrab behaves when a downloadable video is discovered in your clipboard.</source>
-        <translation>Hier kunt u instellen hoe ClipGrab zich gedraagt waarneer een video adres is ontdekt in uw klembord.</translation>
+        <translation>Hier kunt u instellen hoe ClipGrab zich gedraagt waarneer een downloadbare video is ontdekt in uw klembord.</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="535"/>
@@ -522,7 +523,9 @@
         <source>&lt;h2&gt;Thanks&lt;/h2&gt;
 ClipGrab relies on the work of the Qt project, the ffmpeg team, and the youtube-dl team.&lt;br&gt;
 Visit &lt;a href=&quot;https://www.qt.io&quot;&gt;qt.io&lt;/a&gt;, &lt;a href=&quot;https://ffmpeg.org&quot;&gt;ffmpeg.org&lt;/a&gt;, and &lt;a href=&quot;https://youtube-dl.org&quot;&gt;youtube-dl.org&lt;/a&gt; for further information.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h2&gt;Bedankt&lt;/h2&gt;
+ClipGrab steunt op het werk van het Qt project, het ffmpeg team en het youtube-dl team.&lt;br&gt;
+Bezoek &lt;a href=&quot;https://www.qt.io&quot;&gt;qt.io&lt;/a&gt;, &lt;a href=&quot;https://ffmpeg.org&quot;&gt;ffmpeg.org&lt;/a&gt;, en &lt;a href=&quot;https://youtube-dl.org&quot;&gt;youtube-dl.org&lt;/a&gt; voor meer informatie.</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="767"/>
@@ -636,7 +639,7 @@ Visit &lt;a href=&quot;https://www.qt.io&quot;&gt;qt.io&lt;/a&gt;, &lt;a href=&q
         <source>&lt;h2&gt;Support ClipGrab!&lt;/h2&gt;
 &lt;p&gt;Only with your support, ClipGrab can remain free software!&lt;br&gt;So if you like ClipGrab and also want to help ensuring its further development, please consider making a donation.&lt;/p&gt;</source>
         <translation type="unfinished">&lt;h2&gt;Help ClipGrab!&lt;/h2&gt;
-&lt;p&gt;Alleen met uw hulp, kan ClipGrab gratis blijven!&lt;br&gt;Dus als u GlipGrab leuk vind en ook ons wilt helpen tijdens het ontwikkelen, overweeg dan om een donatie te maken.&lt;/p&gt;</translation>
+&lt;p&gt;Alleen met uw hulp, kan ClipGrab gratis blijven!&lt;br&gt;Dus als u GlipGrab leuk vindt en ook ons wilt helpen tijdens het ontwikkelen, overweeg dan om een donatie te maken.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1165"/>
@@ -684,7 +687,7 @@ ClipGrab is al verkrijgbaar in verschillende talen. Als ClipGrab nog niet is ver
     <message>
         <location filename="update_message.ui" line="130"/>
         <source>There is an update for your version of ClipGrab!</source>
-        <translation>Er is een update voor uw versie van ClipGrab!</translation>
+        <translation>Er is een update voor uw versie van ClipGrab beschikbaar!</translation>
     </message>
     <message>
         <location filename="update_message.ui" line="64"/>
